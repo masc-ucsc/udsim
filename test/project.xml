@@ -1,0 +1,21 @@
+<project>
+  <block name="fetch" type="rtl">
+    <complexity cyclo="22">
+      <input name="name1" width="32"/>
+      <input name="name2" width="32"/>
+      <output name="name3" width="32"/>
+    </complexity>
+    <block name="ifid" type="custom">
+      
+    </block>
+    <block name="crack" type="custom">
+    </block>
+  </block>
+  <block name="execute" type="rtl">
+    <complexity cyclo="23">
+      <output name="name3" width="32"/>
+      <input  name="name1" width="32"/>
+      <input  name="name1" width="32"/>
+    </complexity>
+  </block>
+</project>

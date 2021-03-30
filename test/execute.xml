@@ -1,0 +1,352 @@
+<project>
+<block name="AGEN_unit">
+<input name="Rav_in"/>
+<input name="Rbv_in"/>
+<input name="sd_in"/>
+<input name="size_in"/>
+<input name="end_in"/>
+<input name="ua_in"/>
+<output name="va_out"/>
+<output name="data_out"/>
+<output name="expt_out"/>
+<complexity cyclo1="25" cyclo2="10" nCaseStmts="3" nCaseItems="18" nLoops="0" nIfStmts="6" />
+<volume nNodes="94" nStmts="6" nExprs="22" nInputs="6" nOutputs="3" nParams="0" nAlwaysClocks="10" nBAssign="22" nNBAssign="0" nWAssign="0" nOther="34" />
+</block>
+<block name="branch">
+<input name="PC_in"/>
+<input name="Rabv_in"/>
+<input name="sd_in"/>
+<input name="opcode"/>
+<output name="PC_out"/>
+<output name="Ra_out"/>
+<output name="taken_out"/>
+<complexity cyclo1="21" cyclo2="10" nCaseStmts="1" nCaseItems="12" nLoops="0" nIfStmts="8" />
+<volume nNodes="104" nStmts="10" nExprs="23" nInputs="4" nOutputs="3" nParams="0" nAlwaysClocks="4" nBAssign="45" nNBAssign="0" nWAssign="0" nOther="22" />
+</block>
+<block name="cluster">
+<input name="fumask_in"/>
+<input name="Rav_in"/>
+<input name="Rbv_in"/>
+<input name="cmov_in"/>
+<input name="PC_in"/>
+<input name="disp_in"/>
+<input name="size_in"/>
+<input name="endian_in"/>
+<input name="align_in"/>
+<input name="opcode"/>
+<input name="op_func"/>
+<input name="p0_in"/>
+<input name="p1_in"/>
+<input name="pr_in"/>
+<input name="state_in"/>
+<input name="op_fb_in"/>
+<input name="of_fb_in"/>
+<output name="val_out"/>
+<output name="ex_out"/>
+<output name="PC_out"/>
+<output name="taken_out"/>
+<output name="p0_out"/>
+<output name="p1_out"/>
+<output name="pr_out"/>
+<output name="state_out"/>
+<output name="op_out"/>
+<output name="of_out"/>
+<instance name="simple_ALU"/>
+<instance name="simple_ALU"/>
+<instance name="complex_ALU_0"/>
+<instance name="complex_ALU_1"/>
+<instance name="branch"/>
+<instance name="AGEN_unit"/>
+<instance name="AGEN_unit"/>
+<complexity cyclo1="8" cyclo2="8" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="7" />
+<volume nNodes="194" nStmts="7" nExprs="53" nInputs="17" nOutputs="10" nParams="0" nAlwaysClocks="21" nBAssign="14" nNBAssign="0" nWAssign="4" nOther="95" />
+</block>
+<block name="complex_ALU">
+<input name="Rav_in"/>
+<input name="Rbv_in"/>
+<input name="Cond_in"/>
+<input name="opcode"/>
+<input name="op_func"/>
+<input name="in"/>
+<input name="in"/>
+<input name="in0_in"/>
+<input name="in1_in"/>
+<input name="res_in"/>
+<input name="opcode"/>
+<input name="op_func"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="bundle_in"/>
+<input name="srca_in"/>
+<input name="srcb_in"/>
+<input name="cond_in"/>
+<output name="in0_out"/>
+<output name="in1_out"/>
+<output name="res_out"/>
+<output name="Rc_out"/>
+<output name="cond_out"/>
+<output name="ex_out"/>
+<output name="done_out"/>
+<output name="bundle_out"/>
+<output name="stage_busy_out"/>
+<instance name="complex_ALU_0"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="complex_ALU_1"/>
+<complexity cyclo1="159" cyclo2="49" nCaseStmts="10" nCaseItems="120" nLoops="0" nIfStmts="38" />
+<volume nNodes="660" nStmts="48" nExprs="205" nInputs="18" nOutputs="9" nParams="0" nAlwaysClocks="10" nBAssign="189" nNBAssign="0" nWAssign="12" nOther="196" />
+</block>
+<block name="conflict_buffer">
+<input name="ibundle_in"/>
+<input name="insert_in"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="remove_in"/>
+<output name="ibundle_out"/>
+<output name="ibundle_valid"/>
+<complexity cyclo1="7" cyclo2="7" nCaseStmts="0" nCaseItems="0" nLoops="1" nIfStmts="5" />
+<volume nNodes="47" nStmts="6" nExprs="6" nInputs="5" nOutputs="2" nParams="0" nAlwaysClocks="7" nBAssign="6" nNBAssign="10" nWAssign="0" nOther="12" />
+</block>
+<block name="execute">
+<input name="clk"/>
+<input name="reset"/>
+<input name="ib0_in"/>
+<input name="ib1_in"/>
+<input name="ib2_in"/>
+<input name="ib3_in"/>
+<input name="ib4_in"/>
+<input name="ib5_in"/>
+<input name="fwd_data0_in"/>
+<input name="fwd_ready0_in"/>
+<input name="fwd_data1_in"/>
+<input name="fwd_ready1_in"/>
+<input name="cond0_in"/>
+<input name="cond1_in"/>
+<output name="salu0_out"/>
+<output name="salu1_out"/>
+<output name="calu0_out"/>
+<output name="ctrl0_out"/>
+<output name="agen0_out"/>
+<output name="agen1_out"/>
+<output name="val_out"/>
+<output name="write_out"/>
+<output name="dest_out"/>
+<output name="sched_out"/>
+<output name="agen0_val_out"/>
+<output name="agen1_val_out"/>
+<instance name="forward_all"/>
+<instance name="simple_ALU"/>
+<instance name="simple_ALU"/>
+<instance name="complex_ALU"/>
+<instance name="multiply"/>
+<instance name="conflict_buffer"/>
+<instance name="branch"/>
+<instance name="AGEN_unit"/>
+<instance name="AGEN_unit"/>
+<complexity cyclo1="13" cyclo2="13" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="12" />
+<volume nNodes="475" nStmts="12" nExprs="143" nInputs="14" nOutputs="12" nParams="0" nAlwaysClocks="41" nBAssign="77" nNBAssign="0" nWAssign="15" nOther="187" />
+</block>
+<block name="forward_all">
+<input name="srca0_val_in"/>
+<input name="srcb0_val_in"/>
+<input name="srca1_val_in"/>
+<input name="srcb1_val_in"/>
+<input name="srca2_val_in"/>
+<input name="srcb2_val_in"/>
+<input name="srca3_val_in"/>
+<input name="srcb3_val_in"/>
+<input name="srca4_val_in"/>
+<input name="srcb4_val_in"/>
+<input name="srca5_val_in"/>
+<input name="srcb5_val_in"/>
+<input name="srca0_rdy_in"/>
+<input name="srcb0_rdy_in"/>
+<input name="srca1_rdy_in"/>
+<input name="srcb1_rdy_in"/>
+<input name="srca2_rdy_in"/>
+<input name="srcb2_rdy_in"/>
+<input name="srca3_rdy_in"/>
+<input name="srcb3_rdy_in"/>
+<input name="srca4_rdy_in"/>
+<input name="srcb4_rdy_in"/>
+<input name="srca5_rdy_in"/>
+<input name="srcb5_rdy_in"/>
+<input name="cond_in"/>
+<input name="cond0_in"/>
+<input name="cond1_in"/>
+<input name="fwd_data0_in"/>
+<input name="fwd_data1_in"/>
+<input name="fwd_rdy0_in"/>
+<input name="fwd_rdy1_in"/>
+<input name="a0_sigs"/>
+<input name="b0_sigs"/>
+<input name="a1_sigs"/>
+<input name="b1_sigs"/>
+<input name="a2_sigs"/>
+<input name="b2_sigs"/>
+<input name="a3_sigs"/>
+<input name="b3_sigs"/>
+<input name="a4_sigs"/>
+<input name="b4_sigs"/>
+<input name="a5_sigs"/>
+<input name="b5_sigs"/>
+<output name="srca0_val_out"/>
+<output name="srcb0_val_out"/>
+<output name="srca1_val_out"/>
+<output name="srcb1_val_out"/>
+<output name="srca2_val_out"/>
+<output name="srcb2_val_out"/>
+<output name="srca3_val_out"/>
+<output name="srcb3_val_out"/>
+<output name="srca4_val_out"/>
+<output name="srcb4_val_out"/>
+<output name="srca5_val_out"/>
+<output name="srcb5_val_out"/>
+<output name="srca0_rdy_out"/>
+<output name="srcb0_rdy_out"/>
+<output name="srca1_rdy_out"/>
+<output name="srcb1_rdy_out"/>
+<output name="srca2_rdy_out"/>
+<output name="srcb2_rdy_out"/>
+<output name="srca3_rdy_out"/>
+<output name="srcb3_rdy_out"/>
+<output name="srca4_rdy_out"/>
+<output name="srcb4_rdy_out"/>
+<output name="srca5_rdy_out"/>
+<output name="srcb5_rdy_out"/>
+<output name="cond_out"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<instance name="forward"/>
+<complexity cyclo1="3" cyclo2="3" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="2" />
+<volume nNodes="886" nStmts="2" nExprs="386" nInputs="43" nOutputs="25" nParams="0" nAlwaysClocks="4" nBAssign="3" nNBAssign="0" nWAssign="24" nOther="467" />
+</block>
+<block name="forward">
+<input name="regfile_val"/>
+<input name="from0_d0"/>
+<input name="from0_d1"/>
+<input name="from0_d2"/>
+<input name="from0_d3"/>
+<input name="from0_d4"/>
+<input name="from0_d5"/>
+<input name="from1_d0"/>
+<input name="from1_d1"/>
+<input name="from1_d2"/>
+<input name="from1_d3"/>
+<input name="from1_d4"/>
+<input name="from1_d5"/>
+<input name="regfile_val_ready"/>
+<input name="from0_d0_rdy"/>
+<input name="from0_d1_rdy"/>
+<input name="from0_d2_rdy"/>
+<input name="from0_d3_rdy"/>
+<input name="from0_d4_rdy"/>
+<input name="from0_d5_rdy"/>
+<input name="from1_d0_rdy"/>
+<input name="from1_d1_rdy"/>
+<input name="from1_d2_rdy"/>
+<input name="from1_d3_rdy"/>
+<input name="from1_d4_rdy"/>
+<input name="from1_d5_rdy"/>
+<input name="src_select0"/>
+<input name="src_select1"/>
+<input name="src_match0"/>
+<input name="src_match1"/>
+<output name="forwarded_value"/>
+<output name="forwarded_valid"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_2_1"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="142" nStmts="0" nExprs="49" nInputs="30" nOutputs="2" nParams="0" nAlwaysClocks="3" nBAssign="1" nNBAssign="0" nWAssign="0" nOther="89" />
+</block>
+<block name="multiply">
+<input name="srca_in"/>
+<input name="srcb_in"/>
+<input name="opcode"/>
+<input name="op_func"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="bundle_in"/>
+<input name="srca_in"/>
+<input name="srcb_in"/>
+<output name="val_out"/>
+<output name="ex_out"/>
+<output name="done_out"/>
+<output name="bundle_out"/>
+<output name="stage_busy_out"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="multiply_0"/>
+<complexity cyclo1="11" cyclo2="5" nCaseStmts="1" nCaseItems="7" nLoops="0" nIfStmts="3" />
+<volume nNodes="227" nStmts="3" nExprs="75" nInputs="9" nOutputs="5" nParams="0" nAlwaysClocks="4" nBAssign="19" nNBAssign="0" nWAssign="21" nOther="105" />
+</block>
+<block name="regs_RR_EX">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="i0_from_rr_in"/>
+<input name="i1_from_rr_in"/>
+<input name="i2_from_rr_in"/>
+<input name="i3_from_rr_in"/>
+<input name="i4_from_rr_in"/>
+<input name="i5_from_rr_in"/>
+<input name="fwd_data_from_rr_in"/>
+<input name="fwd_valid_from_rr_in"/>
+<input name="fwd_cond_from_rr_in"/>
+<output name="i0_to_exec_out"/>
+<output name="i1_to_exec_out"/>
+<output name="i2_to_exec_out"/>
+<output name="i3_to_exec_out"/>
+<output name="i4_to_exec_out"/>
+<output name="i5_to_exec_out"/>
+<output name="fwd_data_to_ex_out"/>
+<output name="fwd_valid_to_ex_out"/>
+<output name="fwd_cond_to_ex_out"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="147" nStmts="0" nExprs="54" nInputs="12" nOutputs="9" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="8" nOther="85" />
+</block>
+<block name="simple_ALU">
+<input name="Rav_in"/>
+<input name="Rbv_in"/>
+<input name="opcode"/>
+<input name="op_func"/>
+<input name="mem_func"/>
+<output name="Rc_out"/>
+<output name="ex_out"/>
+<complexity cyclo1="85" cyclo2="11" nCaseStmts="6" nCaseItems="80" nLoops="0" nIfStmts="4" />
+<volume nNodes="349" nStmts="10" nExprs="84" nInputs="5" nOutputs="2" nParams="0" nAlwaysClocks="5" nBAssign="158" nNBAssign="0" nWAssign="2" nOther="90" />
+</block>
+</project>

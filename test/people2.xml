@@ -1,0 +1,16 @@
+<people>
+  <person name="manager" num="1" late ="no">
+    <skill  type="start"         score="100" />
+    <skill  type="partition"     score="100" />
+  </person>
+  <person name="engineer" num="2" late ="no">
+    <skill type="design"        score="100" />
+    <skill type="coding"        score="100"/>
+    <skill type="verification"  score="100"/>
+  </person>
+  <person name="engineer" num="1" late ="no">
+    <skill type="design"        score="100" />
+    <skill type="coding"        score="100"/>
+    <skill type="verification"  score="100"/>
+  </person>
+</people>

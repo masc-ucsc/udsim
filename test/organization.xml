@@ -1,0 +1,87 @@
+<!-- ************** Problem/Skills ***************** -->
+<problem>
+  <skill type="design">
+    <overhead size="2">0.2</overhead>
+  </skill>
+  <skill type="documentation">
+    <overhead size="2">0.1</overhead>
+  </skill>
+  <skill type="coordination">
+    <overhead size="2">0.3</overhead>
+  </skill>
+  <skill type="front_design">
+    <overhead size="2">0.2</overhead>
+  </skill>
+  <skill type="back_design">
+    <overhead size="2">0.2</overhead>
+  </skill>
+  <skill type="front_verif">
+    <overhead size="2">0.3</overhead>
+  </skill>
+  <skill type="back_verif">
+    <overhead size="2">0.3</overhead>
+  </skill>
+</problem>
+<!-- ************** Organization ***************** -->
+<organization name="startup">
+  <group name="manager">
+    <!-- skills required by namager. Assume a 1 manager -->
+    <skill type="communication" time="0.3"/>
+    <skill type="documentation" time="0.5"/>
+    <skill type="coordination"  time="0.2"/>
+    <manages group="front_architect" max="5"/>
+    <manages group="back_architect"  max="5"/>
+    <manages group="administrative"  max="1"/>
+  </group>
+  <group name="front_architect">
+    <skill type="design" time="0.3"/>
+    <skill type="documentation" time="0.5"/>
+    <skill type="coordination"  time="0.2"/>
+    <manages group="front_design" max="10"/>
+    <manages group="front_verif"  max="10"/>
+  </group>
+  <group name="back_architect">
+    <skill type="design" time="0.3"/>
+    <skill type="documentation" time="0.5"/>
+    <skill type="coordination"  time="0.2"/>
+    <manages group="back_design"  max="10"/>
+    <manages group="back_verif"   max="10"/>
+  </group>
+  <!-- ************** Frontend ***************** -->
+  <group name="front_design">
+    <skill type="front_design"  time="0.3"/>
+    <skill type="verilog" time="0.7"/>
+  </group>
+  <group name="front_verif">
+    <skill type="front_design"  time="0.3"/>
+    <skill type="verilog" time="0.2"/>
+    <skill type="front_test"    time="0.5"/>
+  </group>
+  <!-- ************** Backend ***************** -->
+  <group name="back_design">
+    <skill type="back_design"  time="0.3"/>
+    <skill type="verilog" time="0.7"/>
+  </group>
+  <group name="back_verif">
+    <skill type="back_design"  time="0.3"/>
+    <skill type="verilog" time="0.2"/>
+    <skill type="back_test"    time="0.5"/>
+  </group>
+  <!-- ************** MISC ***************** -->
+  <group name="administrative">
+    <skill type="communication" time="0.5"/>
+    <skill type="documentation" time="0.5"/>
+  </group>
+</organization>
+
+<!-- ************** Design Flow ***************** -->
+
+<flow type="stage">
+  <flow name="architect" startedBy="architect">
+    <depends on="">
+  </flow>
+  <flow name="design" startedBy="front_design">
+    <!-- it could not start until architect has done 30% of the work -->
+    <depends on="architect" has="0.3"/>
+  </flow>
+</flow>

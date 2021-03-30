@@ -1,0 +1,16 @@
+
+ Technology can change the communication requirements. Matsushita (DAC Booth
+ 2228 Tuesday) said that more communication between design and DFM as technology
+ shrinks.
+
+ Communication patterns: Meetings/documentation/.... (what about bugs on
+ documentation?? :))
+
+ Difficult to coordinate fronted and backend (different mentalily, expertise)
+
+ Useful to integrate the simulator (ucsim) with a project manager (check-list of
+ steps required).
+
+ -Different productivity metrics for backend/frontend. How to "integrate"?
+
+ -Something light weight (for management tools).

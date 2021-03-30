@@ -1,0 +1,52 @@
+<project>
+<block name="cmov_split">
+<input name="inst0_in"/>
+<input name="inst1_in"/>
+<output name="inst0_out"/>
+<output name="inst1_out"/>
+<complexity cyclo1="2" cyclo2="2" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="1" />
+<volume nNodes="19" nStmts="1" nExprs="1" nInputs="2" nOutputs="2" nParams="0" nAlwaysClocks="2" nBAssign="8" nNBAssign="0" nWAssign="0" nOther="7" />
+</block>
+<block name="Decoder">
+<input name="ibundle_in"/>
+<output name="inst_out"/>
+<complexity cyclo1="45" cyclo2="21" nCaseStmts="8" nCaseItems="32" nLoops="0" nIfStmts="12" />
+<volume nNodes="492" nStmts="20" nExprs="130" nInputs="1" nOutputs="1" nParams="0" nAlwaysClocks="2" nBAssign="301" nNBAssign="0" nWAssign="0" nOther="39" />
+</block>
+<block name="Decode">
+<input name="instruction0_decode_in"/>
+<input name="instruction1_decode_in"/>
+<input name="instruction2_decode_in"/>
+<input name="instruction3_decode_in"/>
+<output name="instruction0_decode_out"/>
+<output name="instruction1_decode_out"/>
+<output name="instruction2_decode_out"/>
+<output name="instruction3_decode_out"/>
+<instance name="Decoder"/>
+<instance name="Decoder"/>
+<instance name="Decoder"/>
+<instance name="Decoder"/>
+<instance name="cmov_split"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="38" nStmts="0" nExprs="12" nInputs="4" nOutputs="4" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="0" nOther="26" />
+</block>
+<block name="regsD0_R0">
+<input name="clk"/>
+<input name="load"/>
+<input name="reset_in"/>
+<input name="inst0_from_decode_in"/>
+<input name="inst1_from_decode_in"/>
+<input name="inst2_from_decode_in"/>
+<input name="inst3_from_decode_in"/>
+<output name="inst0_into_rename0_out"/>
+<output name="inst1_into_rename0_out"/>
+<output name="inst2_into_rename0_out"/>
+<output name="inst3_into_rename0_out"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="68" nStmts="0" nExprs="24" nInputs="7" nOutputs="4" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="4" nOther="40" />
+</block>
+</project>

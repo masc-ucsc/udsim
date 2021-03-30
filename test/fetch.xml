@@ -1,0 +1,561 @@
+<project>
+<block name="fetch1">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="PC_in"/>
+<input name="PCtag_in"/>
+<input name="takenAddress_in"/>
+<input name="soSoPrediction_in"/>
+<input name="choice_in"/>
+<input name="local_hist_in"/>
+<input name="data0_in"/>
+<input name="data1_in"/>
+<input name="invalid_in"/>
+<input name="valid_override_in"/>
+<input name="from_ras_in"/>
+<input name="ras_ptr_in"/>
+<input name="ras_ptr_valid_in"/>
+<input name="ras_ret_inval_in"/>
+<input name="br_v_in"/>
+<input name="indir_v_in"/>
+<input name="brdir_in"/>
+<input name="ret_targetPC_in"/>
+<input name="insns_valid_in"/>
+<output name="i0"/>
+<output name="i1"/>
+<output name="i2"/>
+<output name="i3"/>
+<output name="i4"/>
+<output name="i5"/>
+<output name="i6"/>
+<output name="i7"/>
+<output name="override_out"/>
+<output name="override_PC_out"/>
+<output name="to_ras_out"/>
+<output name="new_btb_out"/>
+<output name="pred_update_out"/>
+<output name="stall_out"/>
+<output name="ras_write_out"/>
+<instance name="align"/>
+<instance name="BranchDecoders"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="tp1"/>
+<instance name="MUXn_4_1"/>
+<instance name="BOB"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="REGn"/>
+<instance name="MUXn_2_1"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="520" nStmts="0" nExprs="192" nInputs="22" nOutputs="15" nParams="0" nAlwaysClocks="2" nBAssign="17" nNBAssign="0" nWAssign="52" nOther="257" />
+</block>
+<block name="fetch2">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="instruction0_in"/>
+<input name="instruction1_in"/>
+<input name="instruction2_in"/>
+<input name="instruction3_in"/>
+<input name="instruction4_in"/>
+<input name="instruction5_in"/>
+<input name="instruction6_in"/>
+<input name="instruction7_in"/>
+<input name="removeInstructions_in"/>
+<input name="in"/>
+<output name="inst0_out"/>
+<output name="inst1_out"/>
+<output name="inst2_out"/>
+<output name="inst3_out"/>
+<output name="queue_full_out"/>
+<output name="queue_empty_out"/>
+<complexity cyclo1="5" cyclo2="41" nCaseStmts="2" nCaseItems="20" nLoops="5" nIfStmts="33" />
+<volume nNodes="390" nStmts="31" nExprs="48" nInputs="13" nOutputs="6" nParams="0" nAlwaysClocks="36" nBAssign="167" nNBAssign="39" nWAssign="16" nOther="53" />
+</block>
+<block name="align">
+<input name="offset_in"/>
+<input name="select_in"/>
+<input name="even_in"/>
+<input name="odd_in"/>
+<output name="insns_out"/>
+<instance name="MUXn_2_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="MUXn_8_1"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="51" nStmts="0" nExprs="21" nInputs="4" nOutputs="1" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="0" nOther="30" />
+</block>
+<block name="BOB">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="read_in"/>
+<input name="write_in"/>
+<input name="PC_in"/>
+<input name="pred_dir_in"/>
+<input name="choice_write_in"/>
+<input name="choice_update_in"/>
+<input name="local_hist_in"/>
+<input name="oldPHR_in"/>
+<input name="ras_ptr_in"/>
+<input name="ras_ptr_valid_in"/>
+<input name="ras_ret_inval_in"/>
+<input name="confpred_in"/>
+<input name="return_in"/>
+<output name="bundlePC_out"/>
+<output name="pred_dir_out"/>
+<output name="choice_write_out"/>
+<output name="choice_update_out"/>
+<output name="valid_out"/>
+<output name="local_hist_out"/>
+<output name="updatePHR_out"/>
+<output name="ras_ptr_out"/>
+<output name="ras_ptr_valid_out"/>
+<output name="ras_ret_inv_out"/>
+<output name="return_out"/>
+<output name="stall_out"/>
+<param name="BOBSize"/>
+<param name="BOBSizeLog"/>
+<instance name="RAM_2P"/>
+<complexity cyclo1="5" cyclo2="5" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="4" />
+<volume nNodes="96" nStmts="4" nExprs="16" nInputs="16" nOutputs="12" nParams="2" nAlwaysClocks="3" nBAssign="4" nNBAssign="9" nWAssign="12" nOther="48" />
+</block>
+<block name="BranchDecoder">
+<input name="instruction_in"/>
+<input name="PC_in"/>
+<input name="ras_in"/>
+<output name="branch_out"/>
+<output name="branchType_out"/>
+<output name="takenAddress_out"/>
+<output name="ras_ctrl_out"/>
+<complexity cyclo1="10" cyclo2="4" nCaseStmts="2" nCaseItems="8" nLoops="0" nIfStmts="1" />
+<volume nNodes="78" nStmts="3" nExprs="18" nInputs="3" nOutputs="4" nParams="0" nAlwaysClocks="6" nBAssign="29" nNBAssign="0" nWAssign="4" nOther="18" />
+</block>
+<block name="BranchDecoders">
+<input name="instruction7_in"/>
+<input name="instruction6_in"/>
+<input name="instruction5_in"/>
+<input name="instruction4_in"/>
+<input name="instruction3_in"/>
+<input name="instruction2_in"/>
+<input name="instruction1_in"/>
+<input name="instruction0_in"/>
+<input name="PC7_in"/>
+<input name="PC6_in"/>
+<input name="PC5_in"/>
+<input name="PC4_in"/>
+<input name="PC3_in"/>
+<input name="PC2_in"/>
+<input name="PC1_in"/>
+<input name="PC0_in"/>
+<input name="ras_in"/>
+<input name="valid_override_in"/>
+<output name="ras_out"/>
+<output name="have_branch_out"/>
+<output name="BTB_write_out"/>
+<output name="BTB_branchPos_out"/>
+<output name="BTB_branchType_out"/>
+<output name="BTB_takenAddress_out"/>
+<output name="valid7_out"/>
+<output name="valid6_out"/>
+<output name="valid5_out"/>
+<output name="valid4_out"/>
+<output name="valid3_out"/>
+<output name="valid2_out"/>
+<output name="valid1_out"/>
+<output name="valid0_out"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="BranchDecoder"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_8_1"/>
+<complexity cyclo1="10" cyclo2="10" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="9" />
+<volume nNodes="376" nStmts="9" nExprs="109" nInputs="18" nOutputs="14" nParams="0" nAlwaysClocks="9" nBAssign="100" nNBAssign="0" nWAssign="2" nOther="147" />
+</block>
+<block name="BTB">
+<input name="clk"/>
+<input name="reset"/>
+<input name="PC_in"/>
+<input name="newEntry_in"/>
+<input name="ras_ctrl_in"/>
+<input name="update_in"/>
+<input name="taken_addr_in"/>
+<input name="dumpstate"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="PC_in"/>
+<input name="newEntry_in"/>
+<input name="ras_ctrl_in"/>
+<input name="update_in"/>
+<input name="taken_addr_in"/>
+<input name="dumpstate"/>
+<output name="hit_out"/>
+<output name="branchPos_out"/>
+<output name="branchType_out"/>
+<output name="takenAddress_out"/>
+<output name="ras_ctrl_out"/>
+<output name="prediction_out"/>
+<output name="newEntryhit_out"/>
+<output name="hit_out"/>
+<output name="branchPos_out"/>
+<output name="branchType_out"/>
+<output name="takenAddress_out"/>
+<output name="ras_ctrl_out"/>
+<output name="prediction_out"/>
+<param name="BTBSize"/>
+<param name="TagSize"/>
+<param name="StartBit"/>
+<param name="CounterLen"/>
+<instance name="BTB_way"/>
+<instance name="BTB_way"/>
+<instance name="BTB_way"/>
+<instance name="BTB_way"/>
+<complexity cyclo1="45" cyclo2="32" nCaseStmts="2" nCaseItems="15" nLoops="1" nIfStmts="28" />
+<volume nNodes="439" nStmts="31" nExprs="104" nInputs="16" nOutputs="13" nParams="4" nAlwaysClocks="43" nBAssign="99" nNBAssign="32" nWAssign="6" nOther="124" />
+</block>
+<block name="cache_bank">
+<input name="clk"/>
+<input name="reset"/>
+<input name="index_in"/>
+<input name="data_in"/>
+<input name="tag_in"/>
+<input name="write_in"/>
+<output name="data_out"/>
+<output name="valid_out"/>
+<output name="tag_out"/>
+<instance name="RAM_1P"/>
+<instance name="RAM_1P"/>
+<complexity cyclo1="4" cyclo2="4" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="3" />
+<volume nNodes="55" nStmts="0" nExprs="20" nInputs="6" nOutputs="3" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="3" nOther="32" />
+</block>
+<block name="fetch0">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="delayed_flush"/>
+<input name="override_f1_out"/>
+<input name="f1_stall_in"/>
+<input name="PC_in"/>
+<input name="updateBTB_in"/>
+<input name="to_ras_in"/>
+<input name="retire_in"/>
+<input name="flush_pc_in"/>
+<input name="ras_write_from_f1_in"/>
+<input name="load_fetch"/>
+<input name="dumpstate"/>
+<output name="PCPlusX_out"/>
+<output name="pred_out"/>
+<output name="takenAddr_out"/>
+<output name="choice_out"/>
+<output name="local_hist_out"/>
+<output name="from_ras_out"/>
+<output name="insns_valid_out"/>
+<output name="ras_ptr_out"/>
+<output name="ras_valid_out"/>
+<output name="ras_ret_inval_out"/>
+<output name="stall_out"/>
+<instance name="BTB"/>
+<instance name="RAS"/>
+<instance name="PCPlus"/>
+<instance name="MUXn_4_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="MUXn_8_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="tp0"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="185" nStmts="0" nExprs="71" nInputs="14" nOutputs="11" nParams="0" nAlwaysClocks="1" nBAssign="0" nNBAssign="1" nWAssign="5" nOther="107" />
+</block>
+<block name="insn_memory">
+<input name="clk"/>
+<input name="reset"/>
+<input name="addr_in"/>
+<input name="request_in"/>
+<output name="data_out"/>
+<output name="hit_out"/>
+<output name="addr_out"/>
+<param name="INSN_MEMORY_INSTANCE"/>
+<complexity cyclo1="7" cyclo2="7" nCaseStmts="0" nCaseItems="0" nLoops="2" nIfStmts="4" />
+<volume nNodes="53" nStmts="7" nExprs="11" nInputs="4" nOutputs="3" nParams="1" nAlwaysClocks="1" nBAssign="17" nNBAssign="6" nWAssign="0" nOther="11" />
+</block>
+<block name="itlb">
+<input name="clk"/>
+<input name="tag0_in"/>
+<input name="tag1_in"/>
+<output name="tag0_out"/>
+<output name="tag1_out"/>
+<output name="miss0_out"/>
+<output name="miss1_out"/>
+<param name="NUM_TAGS"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="24" nStmts="2" nExprs="6" nInputs="3" nOutputs="4" nParams="1" nAlwaysClocks="2" nBAssign="2" nNBAssign="0" nWAssign="0" nOther="12" />
+</block>
+<block name="l1icache">
+<input name="clk"/>
+<input name="reset"/>
+<input name="pc_in"/>
+<output name="data0_out"/>
+<output name="hit0_out"/>
+<output name="data1_out"/>
+<output name="hit1_out"/>
+<output name="itlbmiss_out"/>
+<instance name="insn_memory"/>
+<instance name="insn_memory"/>
+<instance name="MUXn_2_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="itlb"/>
+<instance name="cache_bank"/>
+<instance name="cache_bank"/>
+<instance name="cache_bank"/>
+<instance name="cache_bank"/>
+<complexity cyclo1="2" cyclo2="20" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="19" />
+<volume nNodes="278" nStmts="19" nExprs="88" nInputs="3" nOutputs="5" nParams="0" nAlwaysClocks="28" nBAssign="28" nNBAssign="12" nWAssign="4" nOther="99" />
+</block>
+<block name="NextPC">
+<input name="PCPlusX_in"/>
+<input name="FlushPC_in"/>
+<input name="Flush_in"/>
+<input name="resetPC_in"/>
+<input name="reset_in"/>
+<input name="overridePC_in"/>
+<input name="override_in"/>
+<output name="NextPC_out"/>
+<instance name="MUXn_4_1"/>
+<complexity cyclo1="4" cyclo2="4" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="3" />
+<volume nNodes="39" nStmts="3" nExprs="10" nInputs="7" nOutputs="1" nParams="0" nAlwaysClocks="3" nBAssign="4" nNBAssign="0" nWAssign="0" nOther="19" />
+</block>
+<block name="PCPlus">
+<input name="PC_in"/>
+<output name="PCPlus_out"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="4" nStmts="0" nExprs="0" nInputs="1" nOutputs="1" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="1" nOther="3" />
+</block>
+<block name="RAS">
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush_in"/>
+<input name="delayed_flush"/>
+<input name="data_in"/>
+<input name="ctrl_in"/>
+<input name="delayed_write_in"/>
+<input name="ras_ptr_in"/>
+<input name="dont_update_in"/>
+<input name="retired_return_in"/>
+<input name="retired_v_in"/>
+<input name="return_inv_in"/>
+<input name="load_in"/>
+<output name="data_out"/>
+<output name="valid_out"/>
+<output name="stack_ptr_out"/>
+<output name="ret_inval_out"/>
+<instance name="MUXn_4_1"/>
+<instance name="MUXn_2_1"/>
+<instance name="RAM_2P"/>
+<complexity cyclo1="18" cyclo2="14" nCaseStmts="1" nCaseItems="5" nLoops="2" nIfStmts="10" />
+<volume nNodes="144" nStmts="8" nExprs="38" nInputs="13" nOutputs="4" nParams="0" nAlwaysClocks="3" nBAssign="5" nNBAssign="20" nWAssign="10" nOther="60" />
+</block>
+<block name="regsF0">
+<input name="clk"/>
+<input name="reset"/>
+<input name="load"/>
+<input name="PC_in"/>
+<output name="PC_out"/>
+<instance name="REGln"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="20" nStmts="0" nExprs="6" nInputs="4" nOutputs="1" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="1" nOther="13" />
+</block>
+<block name="regsF0_F1">
+<input name="clk"/>
+<input name="reset"/>
+<input name="load"/>
+<input name="PC_in"/>
+<input name="takenAddress_in"/>
+<input name="soSoPrediction_in"/>
+<input name="choice_in"/>
+<input name="local_hist_in"/>
+<input name="insns_valid_in"/>
+<input name="ras_in"/>
+<input name="ras_ptr_from_f0"/>
+<input name="ras_valid_in"/>
+<input name="ras_ret_inval_in"/>
+<output name="PC_out"/>
+<output name="PCtag_out"/>
+<output name="takenAddress_out"/>
+<output name="soSoPrediction_out"/>
+<output name="choice_out"/>
+<output name="local_hist_out"/>
+<output name="insns_valid_out"/>
+<output name="ras_out"/>
+<output name="ras_ptr_to_f1"/>
+<output name="ras_valid_to_f1"/>
+<output name="ras_ret_inval_to_f1"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="173" nStmts="0" nExprs="66" nInputs="13" nOutputs="11" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="5" nOther="102" />
+</block>
+<block name="regsF1_F2">
+<input name="clk"/>
+<input name="load"/>
+<input name="reset"/>
+<input name="inst0_in"/>
+<input name="inst1_in"/>
+<input name="inst2_in"/>
+<input name="inst3_in"/>
+<input name="inst4_in"/>
+<input name="inst5_in"/>
+<input name="inst6_in"/>
+<input name="inst7_in"/>
+<output name="inst0_out"/>
+<output name="inst1_out"/>
+<output name="inst2_out"/>
+<output name="inst3_out"/>
+<output name="inst4_out"/>
+<output name="inst5_out"/>
+<output name="inst6_out"/>
+<output name="inst7_out"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="164" nStmts="0" nExprs="48" nInputs="11" nOutputs="8" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="40" nOther="76" />
+</block>
+<block name="regsF2_D0">
+<input name="clk"/>
+<input name="reset"/>
+<input name="load"/>
+<input name="inst0_from_fetch_in"/>
+<input name="inst1_from_fetch_in"/>
+<input name="inst2_from_fetch_in"/>
+<input name="inst3_from_fetch_in"/>
+<output name="inst0_into_decode0_out"/>
+<output name="inst1_into_decode0_out"/>
+<output name="inst2_into_decode0_out"/>
+<output name="inst3_into_decode0_out"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<instance name="REGln"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="68" nStmts="0" nExprs="24" nInputs="7" nOutputs="4" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="4" nOther="40" />
+</block>
+<block name="sat_reset_table">
+<input name="clk"/>
+<input name="reset"/>
+<input name="index_in"/>
+<input name="shift_in"/>
+<input name="s_dir_in"/>
+<input name="s_index_in"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="index_in"/>
+<input name="write_in"/>
+<input name="w_dir_in"/>
+<input name="w_index_in"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="index_in"/>
+<input name="write_in"/>
+<input name="w_inc_in"/>
+<input name="w_index_in"/>
+<output name="value_out"/>
+<output name="pred_out"/>
+<output name="pred_out"/>
+<param name="IndexSize"/>
+<param name="LogIndexLen"/>
+<param name="ShifterLen"/>
+<param name="ShiftRegInit"/>
+<param name="ShifterID"/>
+<param name="IndexSize"/>
+<param name="LogIndexLen"/>
+<param name="CounterLen"/>
+<param name="CounterInit"/>
+<param name="TableID"/>
+<param name="IndexSize"/>
+<param name="LogIndexLen"/>
+<param name="CounterLen"/>
+<param name="CounterInit"/>
+<param name="Threshold"/>
+<param name="TableID"/>
+<complexity cyclo1="16" cyclo2="16" nCaseStmts="0" nCaseItems="0" nLoops="3" nIfStmts="12" />
+<volume nNodes="108" nStmts="14" nExprs="14" nInputs="18" nOutputs="3" nParams="16" nAlwaysClocks="12" nBAssign="18" nNBAssign="8" nWAssign="0" nOther="42" />
+</block>
+<block name="tp1">
+<input name="clk"/>
+<input name="reset"/>
+<input name="PC_in"/>
+<input name="choice_write_in"/>
+<input name="choice_update_in"/>
+<input name="write_in"/>
+<input name="brdir_in"/>
+<input name="updatePC_in"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="flush"/>
+<input name="choice_in"/>
+<input name="local_hist_in"/>
+<input name="bundlePC_in"/>
+<input name="small_pred_in"/>
+<input name="cond_branch_in"/>
+<input name="ntPC_in"/>
+<input name="tPC_in"/>
+<input name="br_v_in"/>
+<input name="brdir_in"/>
+<input name="pdir_in"/>
+<input name="local_index_in"/>
+<input name="updatePC_in"/>
+<input name="updatePHR_in"/>
+<input name="valid_from_BOB"/>
+<output name="choice_out"/>
+<output name="local_hist_out"/>
+<output name="pred_out"/>
+<output name="choice_write_out"/>
+<output name="choice_update_out"/>
+<output name="oldPHR_out"/>
+<output name="override_out"/>
+<output name="nextPC_out"/>
+<output name="confpred_out"/>
+<instance name="sat_count_table"/>
+<instance name="left_shift_table"/>
+<instance name="sat_count_table"/>
+<instance name="sat_count_table"/>
+<instance name="sat_reset_table"/>
+<instance name="MUXn_2_1"/>
+<instance name="MUXn_2_1"/>
+<complexity cyclo1="7" cyclo2="7" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="6" />
+<volume nNodes="239" nStmts="6" nExprs="72" nInputs="25" nOutputs="9" nParams="0" nAlwaysClocks="10" nBAssign="14" nNBAssign="4" nWAssign="4" nOther="129" />
+</block>
+</project>

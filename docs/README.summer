@@ -1,0 +1,274 @@
+
+
+NOTES:
+
+ -List selection of "play" actions should be random.
+
+ -Breakdown in :sensors/effectors/coordination
+
+----------------------------------------
+
+ Software engineering goal is to produce higher quality software at lower cost.
+Architects should strive to produce higher quality processors/systems at a lower
+cost.
+
+----------------------------------------
+
+Distingish between SEMANTIC cohesion and "WIRE"
+semantic when choosing partitions.
+
+----------------------------------------
+FIVE CORE METRICS TO TRACK/USE:
+
+-Complexity Quantity (Function Points, LoC...)
+
+-Productivity
+
+-time
+
+-Effort (persons-month)
+
+-defect rate (bugs)
+
+----------------------------------------
+
+Agile basic steps: planning, requirements analysis, design, coding, testing, and documentation
+
+Breakdown design in sprints. Each gets from 2 to 6 weeks to implement (30 days target)
+
+-Each spring includes a testbench
+
+-Each team has a scrumMaster that coordinates work (he/she is the only
+ connection point to external communication)
+
+----------------------------------------
+
+How to consider between Adaptative vs Predictive methods.
+
+----------------------------------------
+
+OPT1:-One team is creating partitionings (2-4 weeks work). Other teams get from
+the backlog (LOOKS BETTER)
+
+OPT2:-Tree hierarchy partitioning (no specialization, harder to find integration
+mistakes)
+
+----------------------------------------
+
+ People decides to take tasks (takes time), sets a plan and proceeds. Some
+ external events can stop the progress of the task (if task is small it requires
+ re-start the task again).
+
+ Environment
+
+  A collection of People, Tools, Project, Tasks, and Methodology
+
+ 
+  Tools----Methodology
+    |           |
+  People --  Project -- Tasks
+
+
+ People
+
+ -There are up to 28 times performance difference between programmers (gausian
+  distribution 2..4 avg).
+
+ Project 
+
+  Relation between tasks. Tasks can be partitioned an created a new task graph.
+
+  People can find sub-tasks. If a "re-design is required". The tasks may be
+  regrouped, but the knowledge is high so not as hard to find again.
+
+  // SEMANTIC (inputs, outputs) cyclomatic per block
+  // XML: blocks
+  
+  <macro name="">
+    <input>
+    </input>
+    <output>
+    </output>
+    <FSM name="" cyclomatic=""/>
+    <state name=""/>
+  </macro>
+
+  <block>
+    macro_name, macro_name....
+    <block>
+    </block>
+  </block>
+
+ Task
+
+  States: designed, implemented, verified
+
+ Tools
+
+  FP/hour for "Requirements, Analysis, Design, Evolution, and Delivery".
+
+  Tools are multiplicative factors to People.productivity(x), but they have a
+  learning curve, and a maintenance curve (a project using 1000 tools is harder
+  to evolve than a project using 4 tools)
+ 
+   Factors:
+    -Productivity factor
+    -Maintenance (complexity, bugs)
+    -Shared productivity with other tools (2 c compilers are ok, 5 do not give much extra boost)
+
+  Learning curve (people knowledge on the tool)
+
+ Methodology
+
+  Communication patterns inside a group and steps to do a project.
+
+----------------------------------------
+
+-Project finishes when the bugs found are very low
+
+OBJECTS:
+
+ -Development cycle: Requirements, Analysis, Design, Evolution, and Delivery
+
+ -Design
+
+ -Implement
+
+ -Bugs: Each methodology phase has different bug factors
+
+   Factors:
+    -FPs required to detect
+    -FPs required to find
+    -FPs required to solve
+    -What phases depend on methodology it? (High level design, implementation, ....)
+
+    -Bugs tend to cluster 20% project accounts for over 80%
+
+ -Problem (graph with FPs per node). The problem graph/complexity may evolve
+  with time.
+
+ -Methodology: What is done in each phase of the project. Software vs Hardware
+   design vs PCB design...
+
+
+ -People:
+    
+    Factors:
+     -Productivity or FPs chunk per hour (mean/std dev) for each bug, design, and implement factor.
+
+     -Productivity is not stable. Oscilates with time (happy, depress,
+      interruption...), and improves as more familiar with tool
+     
+     -Interaction with other people?? (like/dislike, get used...?)
+
+     -Productivity of highly skilled people can be neutralised by placing them in positions that require lot of communication 
+     (R.F Scott, D.B. Simmons "Predicting programing group productivity")
+
+     -People spend 65% of their time productively. A highly productive worker spends 51% to 79% effectively. 
+      (Simmons, Communications: a software group productivity dominator)
+
+     -Esterling, B "Software man-power costs: a model", found that average duration of work interruption was 5 minutes and the 
+      average time to regain the train of thought was 2 minutes. Typical interruption lasted 7 minutes.  
+---------------------------------------------------
+
+
+ -Group:
+     Factors:
+     -If there are n workers, then there is a n(n-1)/2 communication interface
+     -Communication has a major effect for groups of size 4 through 8
+     -Communication very little effect for groups of size 2/3 members. 
+     -Design partition has a greater effect on small groups, and design partition is never perfect. 
+     (R.F Scott, D.B. Simmons "Predicting programing group productivity")
+-------------------------------------------------
+
+ -
+
+  Planning: Planning and reprioritizing tasks takes time.  Using the knowledge
+  workers in time planning meetings decreases productivity.  Moreover, if the
+  system is chaotic, no amount of planning can reduce uncertainties.
+
+
+----------------------------------------
+
+Task evolution:
+
+ Build a transition diagram (markov?) between taks states (understand, program,
+ compile, test, debug, optimize, refactor,...)
+
+
+----------------------------------------
+
+Rules to check:
+
+-Add people to a late project makes it later.  (Brooke's Law 1995)
+
+-Working environment has a profound impact (check peopleware) 
+
+-Learning a new tool decreases productivity at the beginning, but improves over
+ time. (Fact 6)
+
+-No time estimation creates run-away projects. (TODO: on project partitioning,
+ introduce a big error, this would create an invalance across tasks)
+
+-It is 3 times as hard to build re-usable code as non-reusable.
+
+-If more than 25% of the code requires re-writing, it is more efficient to start
+ from scratch.
+
+-For every 25% increase on problem complexity, there is a 100% increase on
+ solution complexity. (Fact 21)
+
+-Unstable requirements make run-away projects. (TODO: change specification which
+ requires redesign, which makes project run-away)
+
+-Error removal is the most time consuming part of the design. (Fact 31)
+
+-People working on a project should follow the Rayleigh function: people(t) = K*(1-e**(-at**2))
+
+-Use COCOMO curves to match. As more people is added to a project the productivity decreases (communication dependent)
+
+-Productivity also decreases with project size (The limits of productivity, 1979 Jones). Producitvity = a*(LoC)**b where b is between -0.05 and -0.35. FP measurements show that as we increase
+project size (y-axes), the productivity decreases (x-axes) following something like:
+
+plot [0:5][0:1] 1/x**2-0.1,1/x**3-0.1 
+
+-Maintenance typically consumes 40 - 80% of software costs. (Fact 41)
+
+-Enhancement is responsible for 60% of software maintenance costs. Error correction is roughly 17% (Fact 42)
+
+-60/60 rule. 60% of software cost is spent on maintenance and 60% of the maintenance cost is spent on enhancement.  
+
+
+-Typical breakdowns:
+
+  -20% defining requirements (understanding/defining)
+
+  -20% design
+
+  -20% coding
+
+  -35% verification
+
+  -5% documentation
+
+-People is the most important factor (more than tools and techniques). Change a
+ 10% change in people productivity vs a 10% change in tools.
+
+-Peopleware:
+
+  -- There is no correlation between experience and performance except than those with less than six month's experience with the language used in the exercise did not do as well as the rest of the sample.
+
+   -- For a person involved in engineering, design development, writing , flow is a must. A flow can be interrupted by a telephone call. If the call takes 5 minutes and the reimmersion period for the individual is 15 minutes, then the total time lost because of the call is 20 minutes. 
+   -- Reasonable costs to hire/fire a employee. 
+      The total cost of replacing any employee is 4.5 to 5 months of employee cost. 
+----------------------------------------
+Observations to model:
+
+ -People estimation of design time follows a log normal distribution (Waltzing with Bears).
+When we partition time, we should do errors following a log-normal distribution with a std
+deviation based on the person experience.
+
+----------------------------------------
+
+
+

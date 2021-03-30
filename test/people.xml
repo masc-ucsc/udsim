@@ -1,0 +1,124 @@
+<!-- TODO:
+
+	Collaboration between two VERY different people decreases productivity
+         (language barrier, designer vs architect, may improve with time?)
+
+       Subjective vs Objective decissions
+
+		-Objective  more people increases quality (check for faults)
+		-Subjective more people descreases quality (lack of consistent design/style)
+
+-->
+<people>
+  <person name="manager" num="1">
+    <focus name="sickness">
+      <!-- Gets sick one day a month for minor stuff -->
+      <random every="30d" from="1d" to="3d" factor="0"/>
+      <!-- Gets sick one week every 3 years for not so minor stuff -->
+      <random every="3y" from="7d" to="31d" factor="0"/>
+      <!-- Not so productive due to a cold/flu/.. 50% productivity -->
+      <random every="100d" from="1d" to="3d" factor="0.5"/>
+    </focus>
+    <focus name="dies">
+      <random every="40y" from="30y" to="100y"  factor="0"/>
+    </focus>
+    <focus name="early_guy">
+      <!-- Not so productive after lunch -->
+      <series from="8" to="13" factor="1"/>
+      <series from="13" to="14" factor="0"/> <!-- Lunch -->
+      <series from="14" to="16" factor="0.9"/>
+      <series from="16" to="18" factor="0.8"/>
+    </focus>
+    <skill type="design"        score="70" />
+    <skill type="documentation" score="80" />
+    <skill type="coordination"  score="100"/>
+    <skill type="front_design"  score="100"/>
+    <skill type="front_verif"   score="100"/>
+    <skill type="back_design"   score="60" />
+    <skill type="back_verif"    score="80" />
+  </person>
+  <person name="smart_rtl" num="2">
+    <trigger day="day"/>
+    <trigger work="working123123">
+    <focus name="sickness">
+      <!-- Gets sick one day a month for minor stuff -->
+      <random every="30d" from="1d" to="3d" factor="0"/>
+      <!-- Gets sick one week every 3 years for not so minor stuff -->
+      <random every="3y" from="7d" to="31d" factor="0"/>
+      <!-- Not so productive due to a cold/flu/.. 50% productivity -->
+      <random every="100d" from="1d" to="3d" factor="0.5"/>
+    </focus>
+    <focus name="dies">
+      <random every="40y" from="30y" to="100y"  factor="0"/>
+    </focus>
+    <focus name="early_guy">
+      <!-- Not so productive after lunch -->
+      <series from="8" to="13" factor="1"/>
+      <series from="13" to="14" factor="0"/> <!-- Lunch -->
+      <series from="14" to="16" factor="0.9"/>
+      <series from="16" to="18" factor="0.8"/>
+    </focus>
+    <skill type="design"        score="40" />
+    <skill type="documentation" score="80" />
+    <skill type="coordination"  score="100"/>
+    <skill type="front_design"  score="100"/>
+    <skill type="front_verif"   score="100"/>
+    <skill type="back_design"   score="60" />
+    <skill type="back_verif"    score="80" />
+  </person>
+<person name="fast_rtl" num="1">
+    <focus name="sickness">
+      <!-- Gets sick one day a month for minor stuff -->
+      <random every="30d" from="1d" to="3d" factor="0"/>
+      <!-- Gets sick one week every 3 years for not so minor stuff -->
+      <random every="3y" from="7d" to="31d" factor="0"/>
+      <!-- Not so productive due to a cold/flu/.. 50% productivity -->
+      <random every="100d" from="1d" to="3d" factor="0.5"/>
+    </focus>
+    <focus name="dies">
+      <random every="40y" from="30y" to="100y"  factor="0"/>
+    </focus>
+    <focus name="early_guy">
+      <!-- Not so productive after lunch -->
+      <series from="8" to="13" factor="1"/>
+      <series from="13" to="14" factor="0"/> <!-- Lunch -->
+      <series from="14" to="16" factor="0.9"/>
+      <series from="16" to="18" factor="0.8"/>
+    </focus>
+    <skill type="design"        score="90" />
+    <skill type="documentation" score="80" />
+    <skill type="coordination"  score="100"/>
+    <skill type="front_design"  score="100"/>
+    <skill type="front_verif"   score="100"/>
+    <skill type="back_design"   score="60" />
+    <skill type="back_verif"    score="80" />
+  </person>
+<person name="slow_rtl" num="1">
+    <focus name="sickness">
+      <!-- Gets sick one day a month for minor stuff -->
+      <random every="30d" from="1d" to="3d" factor="0"/>
+      <!-- Gets sick one week every 3 years for not so minor stuff -->
+      <random every="3y" from="7d" to="31d" factor="0"/>
+      <!-- Not so productive due to a cold/flu/.. 50% productivity -->
+      <random every="100d" from="1d" to="3d" factor="0.5"/>
+    </focus>
+    <focus name="dies">
+      <random every="40y" from="30y" to="100y"  factor="0"/>
+    </focus>
+    <focus name="early_guy">
+      <!-- Not so productive after lunch -->
+      <series from="8" to="13" factor="1"/>
+      <series from="13" to="14" factor="0"/> <!-- Lunch -->
+      <series from="14" to="16" factor="0.9"/>
+      <series from="16" to="18" factor="0.8"/>
+    </focus>
+    <skill type="design"        score="60" />
+    <skill type="documentation" score="80" />
+    <skill type="coordination"  score="100"/>
+    <skill type="front_design"  score="100"/>
+    <skill type="front_verif"   score="100"/>
+    <skill type="back_design"   score="60" />
+    <skill type="back_verif"    score="80" />
+  </person>
+
+</people>

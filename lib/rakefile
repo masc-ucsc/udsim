@@ -1,0 +1,17 @@
+
+require 'rdoc/task'
+desc "Generate Documentation"
+RDoc::Task.new :rdoc do |rd|
+  rd.rdoc_dir = 'rdoc'
+  rd.rdoc_files.include('*.rb')
+end
+
+task :default do
+  Rake::application.options.show_tasks = :tasks
+  Rake::application.options.show_task_pattern = //
+  Rake::application.display_tasks_and_comments()
+
+  puts "Tasks:\n"
+  puts "rdoc  ; generate documentation"
+end
+

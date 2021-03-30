@@ -1,0 +1,325 @@
+<project>
+<block name="dispmux">
+<input name="Rb0_in"/>
+<input name="disp0_in"/>
+<input name="op0_in"/>
+<input name="Rb1_in"/>
+<input name="disp1_in"/>
+<input name="op1_in"/>
+<input name="Rb2_in"/>
+<input name="disp2_in"/>
+<input name="op2_in"/>
+<output name="sa0_out"/>
+<output name="sa1_out"/>
+<output name="ca0_out"/>
+<complexity cyclo1="10" cyclo2="10" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="9" />
+<volume nNodes="58" nStmts="9" nExprs="9" nInputs="9" nOutputs="3" nParams="0" nAlwaysClocks="9" nBAssign="12" nNBAssign="0" nWAssign="0" nOther="19" />
+</block>
+<block name="forward_check">
+<input name="srca0"/>
+<input name="srcb0"/>
+<input name="srca1"/>
+<input name="srcb1"/>
+<input name="srca2"/>
+<input name="srcb2"/>
+<input name="srca3"/>
+<input name="srcb3"/>
+<input name="srca4"/>
+<input name="srcb4"/>
+<input name="srca5"/>
+<input name="srcb5"/>
+<input name="dest0"/>
+<input name="dest1"/>
+<input name="dest2"/>
+<input name="dest3"/>
+<input name="dest4"/>
+<input name="dest5"/>
+<input name="uses_a0"/>
+<input name="uses_b0"/>
+<input name="uses_a1"/>
+<input name="uses_b1"/>
+<input name="uses_a2"/>
+<input name="uses_b2"/>
+<input name="uses_a3"/>
+<input name="uses_b3"/>
+<input name="uses_a4"/>
+<input name="uses_b4"/>
+<input name="uses_a5"/>
+<input name="uses_b5"/>
+<input name="dest0_valid"/>
+<input name="dest1_valid"/>
+<input name="dest2_valid"/>
+<input name="dest3_valid"/>
+<input name="dest4_valid"/>
+<input name="dest5_valid"/>
+<output name="srca0_sel"/>
+<output name="srcb0_sel"/>
+<output name="srca1_sel"/>
+<output name="srcb1_sel"/>
+<output name="srca2_sel"/>
+<output name="srcb2_sel"/>
+<output name="srca3_sel"/>
+<output name="srcb3_sel"/>
+<output name="srca4_sel"/>
+<output name="srcb4_sel"/>
+<output name="srca5_sel"/>
+<output name="srcb5_sel"/>
+<output name="srca0_match"/>
+<output name="srcb0_match"/>
+<output name="srca1_match"/>
+<output name="srcb1_match"/>
+<output name="srca2_match"/>
+<output name="srcb2_match"/>
+<output name="srca3_match"/>
+<output name="srcb3_match"/>
+<output name="srca4_match"/>
+<output name="srcb4_match"/>
+<output name="srca5_match"/>
+<output name="srcb5_match"/>
+<instance name="single_check"/>
+<instance name="single_check"/>
+<instance name="single_check"/>
+<instance name="single_check"/>
+<instance name="single_check"/>
+<instance name="single_check"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<instance name="get_select"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="739" nStmts="0" nExprs="330" nInputs="36" nOutputs="24" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="0" nOther="409" />
+</block>
+<block name="get_bit">
+<input name="Ready_bits_in"/>
+<input name="srca_in"/>
+<input name="srcb_in"/>
+<output name="srca_rdy_out"/>
+<output name="srcb_rdy_out"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="13" nStmts="0" nExprs="0" nInputs="3" nOutputs="2" nParams="0" nAlwaysClocks="3" nBAssign="2" nNBAssign="0" nWAssign="0" nOther="8" />
+</block>
+<block name="get_select">
+<input name="src_d0"/>
+<input name="src_d1"/>
+<input name="src_d2"/>
+<input name="src_d3"/>
+<input name="src_d4"/>
+<input name="src_d5"/>
+<input name="d0_valid"/>
+<input name="d1_valid"/>
+<input name="d2_valid"/>
+<input name="d3_valid"/>
+<input name="d4_valid"/>
+<input name="d5_valid"/>
+<input name="uses_src"/>
+<output name="src_sel"/>
+<output name="src_match"/>
+<complexity cyclo1="8" cyclo2="8" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="7" />
+<volume nNodes="56" nStmts="7" nExprs="7" nInputs="13" nOutputs="2" nParams="0" nAlwaysClocks="13" nBAssign="11" nNBAssign="0" nWAssign="0" nOther="18" />
+</block>
+<block name="regfile">
+<input name="clk"/>
+<input name="reset"/>
+<input name="dumpstate"/>
+<input name="pr_in"/>
+<input name="Rc_in"/>
+<input name="value_in"/>
+<input name="write_in"/>
+<input name="sbmask_in"/>
+<input name="cond_in"/>
+<output name="value_out"/>
+<output name="cond_out"/>
+<output name="ready_out"/>
+<instance name="RAM_17P"/>
+<complexity cyclo1="18" cyclo2="18" nCaseStmts="0" nCaseItems="0" nLoops="1" nIfStmts="16" />
+<volume nNodes="232" nStmts="12" nExprs="70" nInputs="9" nOutputs="3" nParams="0" nAlwaysClocks="4" nBAssign="36" nNBAssign="6" nWAssign="8" nOther="96" />
+</block>
+<block name="reg_read">
+<input name="ibundle0_in"/>
+<input name="ibundle1_in"/>
+<input name="ibundle2_in"/>
+<input name="ibundle3_in"/>
+<input name="ibundle4_in"/>
+<input name="ibundle5_in"/>
+<input name="clk"/>
+<input name="reset"/>
+<input name="dumpstate"/>
+<input name="write_data"/>
+<input name="write_valid"/>
+<input name="Rc_in"/>
+<input name="cond_in"/>
+<input name="sbmask_in"/>
+<input name="dest_regs_forward_in"/>
+<input name="dest_regs_fwd_rdy_in"/>
+<output name="rf_ready_bits"/>
+<output name="ibundle0_out"/>
+<output name="ibundle1_out"/>
+<output name="ibundle2_out"/>
+<output name="ibundle3_out"/>
+<output name="ibundle4_out"/>
+<output name="ibundle5_out"/>
+<instance name="regfile"/>
+<instance name="dispmux"/>
+<instance name="forward_check"/>
+<instance name="forward_check"/>
+<instance name="get_bit"/>
+<instance name="get_bit"/>
+<instance name="get_bit"/>
+<instance name="get_bit"/>
+<instance name="get_bit"/>
+<instance name="get_bit"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="401" nStmts="0" nExprs="174" nInputs="16" nOutputs="7" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="19" nOther="208" />
+</block>
+<block name="regsI_RR">
+<input name="clk"/>
+<input name="flush_in"/>
+<input name="reset_in"/>
+<input name="inst0_from_issue_in"/>
+<input name="inst1_from_issue_in"/>
+<input name="inst2_from_issue_in"/>
+<input name="inst3_from_issue_in"/>
+<input name="inst4_from_issue_in"/>
+<input name="inst5_from_issue_in"/>
+<output name="inst0_into_rr_out"/>
+<output name="inst1_into_rr_out"/>
+<output name="inst2_into_rr_out"/>
+<output name="inst3_into_rr_out"/>
+<output name="inst4_into_rr_out"/>
+<output name="inst5_into_rr_out"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<instance name="REGfn"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="100" nStmts="0" nExprs="36" nInputs="9" nOutputs="6" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="6" nOther="58" />
+</block>
+<block name="Scheduler">
+<input name="ibundle0_in"/>
+<input name="ibundle1_in"/>
+<input name="ibundle2_in"/>
+<input name="ibundle3_in"/>
+<input name="new_rob_id0"/>
+<input name="new_rob_id1"/>
+<input name="new_rob_id2"/>
+<input name="new_rob_id3"/>
+<input name="clk"/>
+<input name="Reset_in"/>
+<input name="Stall_in"/>
+<input name="Ready_bits_in"/>
+<input name="exec_loc0_in"/>
+<input name="exec_loc1_in"/>
+<input name="exec_loc2_in"/>
+<input name="exec_loc3_in"/>
+<input name="exec_loc4_in"/>
+<input name="exec_loc5_in"/>
+<input name="exec_valid0_in"/>
+<input name="exec_valid1_in"/>
+<input name="exec_valid2_in"/>
+<input name="exec_valid3_in"/>
+<input name="exec_valid4_in"/>
+<input name="exec_valid5_in"/>
+<input name="exec_failed0_in"/>
+<input name="exec_failed1_in"/>
+<input name="exec_failed2_in"/>
+<input name="exec_failed3_in"/>
+<input name="exec_failed4_in"/>
+<input name="exec_failed5_in"/>
+<output name="ibundle0_out"/>
+<output name="ibundle1_out"/>
+<output name="ibundle2_out"/>
+<output name="ibundle3_out"/>
+<output name="ibundle4_out"/>
+<output name="ibundle5_out"/>
+<output name="inst_rejected_out"/>
+<param name="SCHEDULER_SIZE"/>
+<param name="SCHEDULER_LOGSIZE"/>
+<instance name="scoreboard"/>
+<complexity cyclo1="58" cyclo2="58" nCaseStmts="0" nCaseItems="0" nLoops="8" nIfStmts="49" />
+<volume nNodes="386" nStmts="57" nExprs="74" nInputs="30" nOutputs="7" nParams="2" nAlwaysClocks="41" nBAssign="81" nNBAssign="68" nWAssign="0" nOther="65" />
+</block>
+<block name="scoreboard">
+<input name="dest0"/>
+<input name="dest1"/>
+<input name="dest2"/>
+<input name="dest3"/>
+<input name="dest4"/>
+<input name="dest5"/>
+<input name="d0_valid"/>
+<input name="d1_valid"/>
+<input name="d2_valid"/>
+<input name="d3_valid"/>
+<input name="d4_valid"/>
+<input name="d5_valid"/>
+<input name="d2_complex"/>
+<input name="ready_vector_from_regfile"/>
+<input name="clk"/>
+<input name="reset"/>
+<output name="spec_ready_vector"/>
+<complexity cyclo1="11" cyclo2="11" nCaseStmts="0" nCaseItems="0" nLoops="4" nIfStmts="6" />
+<volume nNodes="168" nStmts="10" nExprs="10" nInputs="16" nOutputs="1" nParams="0" nAlwaysClocks="97" nBAssign="22" nNBAssign="4" nWAssign="0" nOther="25" />
+</block>
+<block name="single_check">
+<input name="srca0"/>
+<input name="srcb0"/>
+<input name="srca1"/>
+<input name="srcb1"/>
+<input name="srca2"/>
+<input name="srcb2"/>
+<input name="srca3"/>
+<input name="srcb3"/>
+<input name="srca4"/>
+<input name="srcb4"/>
+<input name="srca5"/>
+<input name="srcb5"/>
+<input name="dest"/>
+<output name="a0_d"/>
+<output name="b0_d"/>
+<output name="a1_d"/>
+<output name="b1_d"/>
+<output name="a2_d"/>
+<output name="b2_d"/>
+<output name="a3_d"/>
+<output name="b3_d"/>
+<output name="a4_d"/>
+<output name="b4_d"/>
+<output name="a5_d"/>
+<output name="b5_d"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<instance name="CMPn"/>
+<complexity cyclo1="1" cyclo2="1" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="0" />
+<volume nNodes="134" nStmts="0" nExprs="48" nInputs="13" nOutputs="12" nParams="0" nAlwaysClocks="0" nBAssign="0" nNBAssign="0" nWAssign="0" nOther="86" />
+</block>
+<block name="update_ready_bits">
+<input name="ready_bits_in"/>
+<input name="dest0"/>
+<input name="dest1"/>
+<input name="dest2"/>
+<input name="dest3"/>
+<input name="dest4"/>
+<input name="dest5"/>
+<output name="ready_bits_out"/>
+<complexity cyclo1="7" cyclo2="7" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="6" />
+<volume nNodes="37" nStmts="6" nExprs="6" nInputs="7" nOutputs="1" nParams="0" nAlwaysClocks="7" nBAssign="7" nNBAssign="0" nWAssign="0" nOther="11" />
+</block>
+</project>
