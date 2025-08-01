@@ -18,7 +18,7 @@ module UDSim
 
     @@job_pool       = Array.new
     @@sub_job_pool   = Array.new
-    @@create_adjHash = "false"
+    #@@create_adjHash = "false"
     @@module_key     = Hash.new  ## this is for finding the experience.
     @@main_block     = Hash.new
     @@partition      = Hash.new {|h,k| h[k] = Array.new}
@@ -28,6 +28,7 @@ module UDSim
     @@job_array = Array.new
     @@k = 0
     @@test_flag = 1
+    @@tmp_counter = 0
     def initialize()
       @block          = Array.new
       @n_sub_projects = 0
@@ -37,7 +38,7 @@ module UDSim
     def reset()
       @@partition.each {| key, value|
         value.each { |id|
-          	job = @@name_idHash.index(id) if @@name_idHash.index(id)  #FIXME:if condition added for SCALE
+          job = @@name_idHash.key(id)
           job.is_assigned = false if job  #FIXME: for SCALE
         }
       }
@@ -157,8 +158,8 @@ module UDSim
       @@partition.each {| key, value|
         inserted = false
         value.each { |id|
-          if @@name_idHash.index(id) #FIXME:Added for SCALE
-            job = @@name_idHash.index(id)
+          job = @@name_idHash.key(id)
+          if job
             if ((job.is_assigned == false))
               hours = hours + calc_raw_hours(job, task_name, effort)
               prj.block.push(job)
@@ -517,9 +518,27 @@ module UDSim
 
    def edges()
      length = 0
-     @@adjHash.each { |k,val|
-       length = length+val.length
-     }
+       	for i in 1 .. @@cycloHash.length do
+         	if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
+       			val = @@adjHash.fetch(i)
+       			key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
+       			key.each {|a|
+              key.delete(a) if not a.first ==  i # If delete here, counting edges fails
+            }
+            if key[0]
+              key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
+              ### check if this key is value for some one else
+              for j in 1 .. @@cycloHash.length do
+                if ( j.to_i != i.to_i && @@adjHash.has_key?(j))
+                  valx = @@adjHash.fetch(j)
+                  if (valx.include?(key_name))
+                    length += 1
+                  end
+                end
+              end
+            end
+        end
+      end
      return length
    end
 
@@ -528,7 +547,9 @@ module UDSim
 
      num_of_people = ((People.sub_managers).to_i-1)*2
      num_of_people = 2 if num_of_people < 2
-     tmpFil = Tempfile.new("#{$project_file_name}.hgr")
+
+     @@tmp_counter+=1
+     tmpFil = Tempfile.new("#{$project_file_name}_#{@@tmp_counter}.hgr")
 
      File.open(tmpFil.path, "w") { |aFile|
        ### line 1 in the .hgr file
@@ -537,15 +558,14 @@ module UDSim
 
        	### subsequent lines in the file
        	@mem = Hash.new {|h,k| h[k] = Array.new}
-       	flag = false
         conta = 0
        	for i in 1 .. @@cycloHash.length do
+          flag = false
          	if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
        			val = @@adjHash.fetch(i)
-       			#key = @@adjHash.index(@@adjHash.fetch(i))
        			key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
        			key.each {|a|
-              key.delete(a) if not a.first ==  i
+              key.delete(a) if not a.first ==  i # If delete here, counting edges fails
             }
             if key[0]
               key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
@@ -626,8 +646,8 @@ module UDSim
        return
      end
      if $op_kmetis
-       system("echo #{$op_kmetis} #{tmpFil.path} #{num_of_people}")
-       system("cp #{tmpFil.path} graph")
+        system("#{$op_kmetis} #{tmpFil.path} #{num_of_people}")
+        system("cp #{tmpFil.path} graph.#{@@tmp_counter}")
      end
 
      if File.exist? filename
