@@ -19,11 +19,11 @@ module UDSim
         w = u1 * u1 + u2 * u2
       end while w >= 1
 
-      w = Math::sqrt( ( -2 * Math::log(w)) / w )
-      g2 = u1 * w;
-      g1 = u2 * w;
-      #      end while (g1 < 0)
-      return g1
+      w = Math.sqrt((-2 * Math.log(w)) / w)
+      g2 = u1 * w
+      g1 = u2 * w
+      # end while (g1 < 0)
+      g1
     end
 
     #-------------------------------------------

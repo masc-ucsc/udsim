@@ -1,5 +1,5 @@
 
-require "tempfile"
+require 'tempfile'
 require 'ProjectBlock'
 require 'MetisBalancedPartitioner'
 
@@ -631,7 +631,7 @@ module UDSim
       graph_data  = File.read(tmpFil.path)
       partitioner = MetisBalancedPartitioner.new(graph_data)
 
-      algorithms = [:multilevel, :greedy_growth, :kernighan_lin]
+      algorithms = [:greedy_growth, :kernighan_lin]
       result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
 
       result[:partitions].each_with_index do |part, idx|

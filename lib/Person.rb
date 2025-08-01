@@ -1,5 +1,5 @@
-require "Event"
-require "Trend"
+require 'Event'
+require 'Trend'
 
 module UDSim
   # Person class. There can be specializations like Manager, Designer, Verifier, Sabelotodo...
@@ -49,32 +49,30 @@ module UDSim
       @boss     = self
       @job_pool = Array.new
 
-      reset()
-      @skill = Hash.new {|h,k| k = 0.0}
-      y.elements.each("skill") {|e|
-        type = e.attributes["type"]
-        score = e.attributes["score"]
+      reset
+      @skill = Hash.new { |h, k| k = 0.0 }
+      y.elements.each('skill') do |e|
+        type = e.attributes['type']
+        score = e.attributes['score']
         @skill[type] = score.to_f
-      }
+      end
     end
 
     #-------------------------------------------
-    def Person.rayleigh
-      return @@rayleigh
+    def self.rayleigh
+      @@rayleigh
     end
 
-    #-------------------------------------------
-    def Person.communication
-      return @@communication
+    def self.communication
+      @@communication
     end
 
-    #-------------------------------------------
-    def Person.meeting
-      return @@meeting
+    def self.meeting
+      @@meeting
     end
     #------------------------------------------
 
-    def reset()
+    def reset
       @experience            = 0.0
       @approx_projects_hours = 0.0
       @unadjusted_hours      = 0.0
@@ -239,16 +237,16 @@ module UDSim
 
     #-------------------------------------------
     def undo_due_to_defect(task)
-      task.hours = task.hours-@trend_defect.random_gaussian()
+      task.hours = task.hours - @trend_defect.random_gaussian
       task.hours = 1 if task.hours < 1 # Even if a bug solves a problem, it should not be magic
 
       return unless rand(16) < 2
 
-      each_related(task, @@active_tasks) { |t|
+      each_related(task, @@active_tasks) do |t|
         next if t.hours <= 0
-        t.hours = t.hours - @trend_defect.random_gaussian()*4
+        t.hours = t.hours - @trend_defect.random_gaussian * 4
         t.hours = 1 if t.hours < 1 # Even if a bug solves a problem, it should not be magic
-      }
+      end
     end
 
     #-------------------------------------------
@@ -256,28 +254,28 @@ module UDSim
       #print "task hours", task.hours, "\n"
       ## Setup overhead, annoy anyone randomly inside the company
 
-      one2one(task, @trend_async.random_gaussian()) if $op_comm
+      one2one(task, @trend_async.random_gaussian) if $op_comm
       compiletime(task)
 
       ## Just pester related projects (sync time). Needs the % of task done
       return unless $op_meet
 
-      meeting_size = boss.dependants.size()
-      return if meeting_size < 2 ## No reson to meet. Not enough work
+      meeting_size = boss.dependants.size
+      return if meeting_size < 2 # No reason to meet. Not enough work
 
-      comm =  @trend_sync.random_gaussian()/meeting_size #/@@active_tasks.size
+      comm = @trend_sync.random_gaussian / meeting_size # /@@active_tasks.size
 
-      #      puts "jojo2 Comm:" + comm.to_s + " : " + meeting_size.to_s + " : "  + @@active_tasks.size.to_s
+      # puts "jojo2 Comm:#{comm} : #{meeting_size} : #{@@active_tasks.size}"
 
-      @@active_tasks.each { |t|
+      @@active_tasks.each do |t|
         next if t.hours < 0
 
-        t.hours = t.hours-comm
+        t.hours = t.hours - comm
         t.hours = 1 if t.hours < 1
 
         @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day] + comm if $op_overhead
         @@meeting[$timeline.workdate.day] = @@meeting[$timeline.workdate.day] + comm if $op_meeting
-      }
+      end
     end
 
     #-------------------------------------------
