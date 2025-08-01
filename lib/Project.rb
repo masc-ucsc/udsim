@@ -535,7 +535,7 @@ module UDSim
 
       partitioner = MetisBalancedPartitioner.new(metis_data)
 
-      algorithms = [:greedy_growth, :kernighan_lin]
+      algorithms = [:multilevel, :fast_bfs, :fast_hash, :fast_random]
       result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
 
       result[:partitions].each_with_index do |part, idx|

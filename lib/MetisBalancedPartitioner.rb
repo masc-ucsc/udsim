@@ -2,16 +2,11 @@
 
 require 'rgl/adjacency'
 require 'matrix'
+require 'set'
 
 class MetisBalancedPartitioner
   def initialize(graph_input)
-    if File.exist?(graph_input)
-      # File path input
-      @graph_data = File.read(graph_input)
-    else
-      # String input (METIS format data)
-      @graph_data = graph_input
-    end
+    @graph_data = graph_input
 
     @graph, @weights = parse_metis_format
     @vertices = @graph.vertices.to_a.sort
@@ -28,6 +23,12 @@ class MetisBalancedPartitioner
       kernighan_lin_partition(k, balance_factor)
     when :greedy_growth
       greedy_growth_partition(k, balance_factor)
+    when :fast_random
+      fast_random_partition(k, balance_factor)
+    when :fast_bfs
+      fast_bfs_partition(k, balance_factor)
+    when :fast_hash
+      fast_hash_partition(k, balance_factor)
     else
       raise "Unknown algorithm: #{algorithm}"
     end
@@ -165,6 +166,122 @@ class MetisBalancedPartitioner
     end
 
     partitions = balance_partitions(partitions, k, balance_factor)
+    format_result(partitions, k)
+  end
+
+  # Fast random partitioning with edge awareness - O(n)
+  def fast_random_partition(k, balance_factor = 1.05)
+    partitions = Array.new(k) { [] }
+    vertices_by_degree = @vertices.map { |v| [v, vertex_degree(v)] }
+    
+    # Sort by degree descending for better initial placement
+    vertices_by_degree.sort_by! { |_, degree| -degree }
+    
+    # Distribute high-degree vertices first, then randomly assign the rest
+    vertices_by_degree.each_with_index do |(vertex, _), idx|
+      if idx < k
+        partitions[idx] << vertex
+      else
+        # Randomly assign to partition, but prefer smaller partitions
+        partition_weights = partitions.map.with_index { |p, i| [1.0 / (p.length + 1), i] }
+        chosen_partition = partition_weights.sample(random: Random.new)[1]
+        partitions[chosen_partition] << vertex
+      end
+    end
+    
+    format_result(partitions, k)
+  end
+
+  # Fast BFS-based partitioning - O(n + e)
+  def fast_bfs_partition(k, balance_factor = 1.05)
+    return simple_partition(k) if @vertices.empty? || k <= 0
+    
+    partitions = Array.new(k) { [] }
+    visited = Set.new
+    target_size = (@vertices.length.to_f / k).ceil
+    
+    # Start with highest degree vertex
+    start_vertex = @vertices.max_by { |v| vertex_degree(v) }
+    
+    k.times do |partition_idx|
+      break if visited.size >= @vertices.length
+      
+      # If we've visited all connected components, start from an unvisited high-degree vertex
+      if partitions[partition_idx].empty?
+        remaining = @vertices - visited.to_a
+        break if remaining.empty?
+        start_vertex = remaining.max_by { |v| vertex_degree(v) }
+      end
+      
+      # BFS from start vertex
+      queue = [start_vertex]
+      visited.add(start_vertex) unless visited.include?(start_vertex)
+      partitions[partition_idx] << start_vertex unless partitions[partition_idx].include?(start_vertex)
+      
+      while !queue.empty? && partitions[partition_idx].length < target_size
+        current = queue.shift
+        
+        # Add neighbors in order of edge weight (heaviest first)
+        neighbors = @graph.adjacent_vertices(current)
+          .reject { |n| visited.include?(n) }
+          .sort_by { |n| -edge_weight(current, n) }
+        
+        neighbors.each do |neighbor|
+          break if partitions[partition_idx].length >= target_size
+          
+          visited.add(neighbor)
+          partitions[partition_idx] << neighbor
+          queue << neighbor
+        end
+      end
+    end
+    
+    # Assign any remaining vertices to smallest partitions
+    remaining = @vertices - visited.to_a
+    remaining.each do |vertex|
+      smallest_partition_idx = partitions.map.with_index { |p, i| [p.length, i] }.min[1]
+      partitions[smallest_partition_idx] << vertex
+    end
+    
+    format_result(partitions, k)
+  end
+
+  # Fast hash-based partitioning - O(n)
+  def fast_hash_partition(k, balance_factor = 1.05)
+    partitions = Array.new(k) { [] }
+    
+    # Use vertex ID hash for consistent but pseudo-random distribution
+    @vertices.each do |vertex|
+      # Create a hash that considers vertex degree for better distribution
+      degree = vertex_degree(vertex)
+      hash_input = "#{vertex}_#{degree}".hash.abs
+      partition_idx = hash_input % k
+      partitions[partition_idx] << vertex
+    end
+    
+    # Simple rebalancing - move vertices from oversized to undersized partitions
+    target_size = (@vertices.length.to_f / k).ceil
+    max_allowed = (target_size * balance_factor).floor
+    
+    loop do
+      oversized = partitions.each_with_index.select { |p, _| p.length > max_allowed }
+      undersized = partitions.each_with_index.select { |p, _| p.length < target_size - 1 }
+      
+      break if oversized.empty? || undersized.empty?
+      
+      # Move one vertex from largest oversized to smallest undersized
+      from_partition, _from_idx = oversized.max_by { |p, _| p.length }
+      to_partition, _to_idx = undersized.min_by { |p, _| p.length }
+      
+      # Move vertex with fewest connections within its current partition
+      vertex_to_move = from_partition.min_by do |v|
+        @graph.adjacent_vertices(v).count { |n| from_partition.include?(n) }
+      end
+      
+      from_partition.delete(vertex_to_move)
+      to_partition << vertex_to_move
+    end
+    
     format_result(partitions, k)
   end
 
