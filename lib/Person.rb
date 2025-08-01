@@ -154,6 +154,15 @@ module UDSim
 
     #-------------------------------------------
     def task_finish(task)
+      puts "Task finish \"" + task.name +
+        "\" for project \"" + task.sub_project.name +
+        #"\" at " + $timeline.date.to_s +
+        " unadjusted hours " + task.person.unadjusted_hours.to_s +
+        " total approx hours " + task.person.approx_projects_hours.to_s+
+        " raw hours of project " + task.sub_project.raw_hours(task).to_s+
+        " adjusted hours " + task.person.adjusted_hours.to_s +
+        " person " + name if $op_verbose
+
       remove_job()
       @unadjusted_hours = (@unadjusted_hours - task.sub_project.raw_hours(task))
 
@@ -163,14 +172,6 @@ module UDSim
       end
 
       @@active_tasks.delete(task)
-      puts "Task finish \"" + task.name +
-        "\" for project \"" + task.sub_project.name +
-        "\" at " + $timeline.date.to_s +
-        " unadjusted hours " + task.person.unadjusted_hours.to_s +
-        " total approx hours " + task.person.approx_projects_hours.to_s+
-        " raw hours of project " + task.sub_project.raw_hours(task).to_s+
-        " adjusted hours " + task.person.adjusted_hours.to_s +
-        " person " + name if $op_verbose
     end
 
     #-------------------------------------------

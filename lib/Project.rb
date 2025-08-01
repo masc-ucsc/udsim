@@ -1,6 +1,7 @@
 
 require "tempfile"
 require 'ProjectBlock'
+require 'MetisBalancedPartitioner'
 
 module UDSim
 
@@ -26,7 +27,6 @@ module UDSim
     @@i = 1    #Tasks not created for main manager, who is stored in location 0
     @@j = 0    #Tasks not created for main manager, who is stored in location 0
     @@job_array = Array.new
-    @@k = 0
     @@test_flag = 1
     @@tmp_counter = 0
     def initialize()
@@ -151,11 +151,12 @@ module UDSim
       prj = Project.new
       prj.name = @name + ".#{@n_sub_projects}"
 
-      @n_sub_projects = @n_sub_projects + 1
+      @n_sub_projects += 1
       hours = 0
+      k = 0
 
       @@partition.each {|key, value| value.uniq!}
-      @@partition.each {| key, value|
+      @@partition.each {|key, value|
         inserted = false
         value.each { |id|
           job = @@name_idHash.key(id)
@@ -165,7 +166,7 @@ module UDSim
               prj.block.push(job)
             end
           else
-            @@k = @@k+1
+            k += 1
           end
 
           if hours >= max_hours
@@ -188,7 +189,7 @@ module UDSim
       }
 
       @@job_pool << prj if hours>0
-      print " Num of original sub jobs ", @n_sub_projects, "\n" if $op_verbose
+      puts("Num sub jobs #{@n_sub_projects} job_pool:#{@@job_pool.length} k:#{k}") if $op_verbose
     end
 
 
@@ -409,92 +410,76 @@ module UDSim
       ## Adjust to each product/company coding style (flatness)
       hour = hour * $op_coding_style
 
-      hour = 1.5 if hour < 1.5 # .5 hour work is the min for each file
+      #hour = 1.5 if hour < 1.5 # .5 hour work is the min for each file
+      hour = 0.1 if hour < 0.1 # .5 hour work is the min for each file
 
      return hour
     end
 
  public
-   def create_adjHash()
-     @@cycloHash   = Hash.new
-     @@locHash     = Hash.new
-     @@adjHash     = Hash.new {|h, k| h[k] = Array.new }
-     @@name_idHash = Hash.new
-     @@main_block.each { |key,value|
-       @@name_idHash[value]=value.each_id()
-     }
+    def create_adjHash()
+      @@cycloHash   = Hash.new
+      @@locHash     = Hash.new
+      @@adjHash     = Hash.new {|h, k| h[k] = Array.new }
+      @@name_idHash = Hash.new
+      @@main_block.each { |key,value|
+        @@name_idHash[value]=value.each_id()
+      }
 
-     @@main_block.each do |key, value|
-       	a=[]
-       	value.each_instance(){|y|
-        tmp = @@main_block[y];
-        if (tmp.instance_of?(ProjectBlock) )
-          a.push(tmp)
-        end
-       }
+      @@main_block.each do |key, value|
+        a=[]
+        value.each_instance(){|y|
+          tmp = @@main_block[y];
+          if (tmp.instance_of?(ProjectBlock) )
+            a.push(tmp)
+          end
+        }
 
-       @@cycloHash[key] = value.cyclo   ### 1
-       @@locHash[key] = value.each_loc()   ### 1
+        @@cycloHash[key] = value.cyclo   ### 1
+        @@locHash[key] = value.each_loc()   ### 1
 
-       b=Array.new
-       a.each { |val|
-         if(@@main_block.has_key?(val.nname()))
-           tmp = @@main_block[val.nname()]
-           b.push(tmp)  if (tmp.instance_of?(ProjectBlock))
-         end
-       }
+        b=Array.new
+        a.each { |val|
+          if(@@main_block.has_key?(val.nname()))
+            tmp = @@main_block[val.nname()]
+            b.push(tmp)  if (tmp.instance_of?(ProjectBlock))
+          end
+        }
 
-       c=Array.new
-       b=b.uniq
-       b.each { |val|
-         tmp = @@main_block[val.nname()]
-         c.push(tmp) if tmp.kind_of?(ProjectBlock) and (tmp != value)
-       }
+        c=Array.new
+        b=b.uniq
+        b.each { |val|
+          tmp = @@main_block[val.nname()]
+          c.push(tmp) if tmp.kind_of?(ProjectBlock) and (tmp != value)
+        }
 
-       @@adjHash[@@name_idHash[value]] = c
+        @@adjHash[@@name_idHash[value]] = c
 
-       xArr = Array.new
-       @@adjHash.each { |k,v|
-         xArr.concat(v) if (v.length > 0)
-       }
+        xArr = Array.new
+        @@adjHash.each { |k,v|
+          xArr.concat(v) if (v.length > 0)
+        }
 
-       xArr.each{|k|
-         if (@@adjHash.has_key?(@@name_idHash[k]))
-           tmp =Array.new
-           tmp = @@adjHash[@@name_idHash[k]]
-           if (tmp.length === 0)
-             @@adjHash.delete(@@name_idHash[k])
-           end
-         end
-       }
-     end
+        xArr.each{|k|
+          if (@@adjHash.has_key?(@@name_idHash[k]))
+            tmp =Array.new
+            tmp = @@adjHash[@@name_idHash[k]]
+            if (tmp.length === 0)
+              @@adjHash.delete(@@name_idHash[k])
+            end
+          end
+        }
+      end
 
-    @@adjHash.each { |key, value|
-       value.each{|val|
-         @@module_key[val] = @@name_idHash.key(key)
-       }
-       @@module_key[@@name_idHash.key(key)] = @@name_idHash.key(key)
-     }
+      @@adjHash.each { |key, value|
+        value.each{|val|
+          @@module_key[val] = @@name_idHash.key(key)
+        }
+        @@module_key[@@name_idHash.key(key)] = @@name_idHash.key(key)
+      }
 
-  ###################################
-  # print "From module key ", "\n"
-  # @@module_key.each {|k,v| print k.name,"-->", v.name , "\n"}
-   #print "***********************\n"
-    #print "Name ID Hash\n"
-   #@@name_idHash.each{|n, v| print n.name, ": ", v, "\n"}
-
-  #  print "*********************************\n"
-  #   @@adjHash.each{|k,v|
-  #    print @@name_idHash.index(k).name , "-->"
-  #    v.each{|vv| print vv.name, " " }
-  #    print "\n"
-  #    }
-  #   print "**********************\n"
-  #   @@locHash.each{|k,v| print k," : ", v, "\n"}
-  ############################
-
-     write_file()
-   end
+      write_file()
+    end
 
    def get_key(project)
      tmp = Array.new
@@ -525,6 +510,7 @@ module UDSim
        			key.each {|a|
               key.delete(a) if not a.first ==  i # If delete here, counting edges fails
             }
+          length += val.length
             if key[0]
               key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
               ### check if this key is value for some one else
@@ -641,13 +627,27 @@ module UDSim
      if File.exist? filename
        File.delete filename
      end
+      puts("2.NNNNNN")
      if edges() == 0
        read_file(filename, "#{tmpFil.path}")
        return
      end
+
      if $op_kmetis
         system("#{$op_kmetis} #{tmpFil.path} #{num_of_people}")
         system("cp #{tmpFil.path} graph.#{@@tmp_counter}")
+        puts("1.HERE")
+     else
+        puts("HERE")
+        graph_data  = File.read(tmpFil.path)
+        partitioner = MetisBalancedPartitioner.new(graph_data)
+
+        algorithms = [:multilevel, :greedy_growth, :kernighan_lin]
+        result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
+
+        result[:partitions].each_with_index do |part, idx|
+          @@partition[idx+1] = part
+        end
      end
 
      if File.exist? filename
@@ -661,7 +661,7 @@ module UDSim
      if File.exist? filename
        File.open(filename, "r") { |aFile|
          while(line=aFile.gets)
-           @@partition[line]=@@partition[line].push(counter)   ## Partitioned code will be in this hash
+           @@partition[line].push(counter)   ## Partitioned code will be in this hash
            counter=counter+1
          end
        }
@@ -670,7 +670,7 @@ module UDSim
        File.open(hgrfile , "r") { |aFile|
          aFile.gets
          while line=aFile.gets
-           @@partition[line]=@@partition[line].push(counter)   ## Partitioned code will be in this hash
+           @@partition[line].push(counter)   ## Partitioned code will be in this hash
            counter=counter+1
          end
        }

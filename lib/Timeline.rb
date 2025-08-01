@@ -110,6 +110,10 @@ module UDSim
       reset()
     end
 
+    def to_s()
+      return "date:#{@current_date} list:#{@list.lenght}"
+    end
+
     def reset
 
       @current_date = WorkDate.new
