@@ -26,6 +26,7 @@ module UDSim
     attr_accessor :job_pool     # Pool from which the manager selects the task to assign
 
     @@people_date   = Hash.new {|k,v| k[v] = Array.new }
+    @@gantt_tasks   = Hash.new {|k,v| k[v] = Hash.new } # New structure: [project][task_name][person] = {start_date, end_date}
     @@rayleigh      = Hash.new {|k,v| k[v] = 0.0 }
     @@communication = Hash.new {|k,v| k[v] = 0.0 }
     @@meeting       = Hash.new {|k,v| k[v] = 0.0 }
@@ -122,7 +123,16 @@ module UDSim
 
       if $op_gantt
         print "for gantt.schedule ::", task.sub_project.name, "\n" if $op_debug
+        # Keep old structure for backward compatibility
         @@people_date[task.sub_project.name] = @@people_date[task.sub_project.name] << task.name << task.person.name << $timeline.workdate.to_date
+        
+        # New structured approach: record task start
+        task_key = "#{task.sub_project.name}_#{task.name}"
+        @@gantt_tasks[task_key] = {} unless @@gantt_tasks[task_key]
+        @@gantt_tasks[task_key][task.person.name] = {} unless @@gantt_tasks[task_key][task.person.name]
+        @@gantt_tasks[task_key][task.person.name][:start_date] = $timeline.workdate.to_date
+        @@gantt_tasks[task_key][task.person.name][:task_name] = task.name
+        @@gantt_tasks[task_key][task.person.name][:project_name] = task.sub_project.name
       end
 
       @@active_tasks << task
@@ -166,7 +176,14 @@ module UDSim
 
       if $op_gantt
         print "for gantt.do work::", task.sub_project.name, "\n" if $op_verbose
+        # Keep old structure for backward compatibility
         @@people_date[task.sub_project.name] = @@people_date[task.sub_project.name] << $timeline.workdate.to_date
+        
+        # New structured approach: record task end
+        task_key = "#{task.sub_project.name}_#{task.name}"
+        if @@gantt_tasks[task_key] && @@gantt_tasks[task_key][task.person.name]
+          @@gantt_tasks[task_key][task.person.name][:end_date] = $timeline.workdate.to_date
+        end
       end
 
       @@active_tasks.delete(task)
@@ -387,50 +404,137 @@ module UDSim
     end
 
     def plot_gantt_chart
-      File.open("#{$op_gantt}", "w") do |aFile|
-        aFile.puts "<?php"
-        aFile.puts " require_once \"BURAK_Gantt.class.php\" ;"
-        aFile.puts " $g = new BURAK_Gantt();"
-        aFile.puts " $g->setGrid(3);"
-        aFile.puts " $g->setLoc(\"de_DE\");"
-        aFile.puts " $g->setColor(\"group\",\"000000\");"
-        aFile.puts " $g->setColor(\"progress\",\"00FF00\");"
+      # Generate HTML file with Google Charts Timeline using new structured data
+      filename = $op_gantt.gsub(/\.php$/, '.html')
+      
+      File.open(filename, "w") do |aFile|
+        aFile.puts "<!DOCTYPE html>"
+        aFile.puts "<html>"
+        aFile.puts "<head>"
+        aFile.puts "  <title>UDSim Project Gantt Chart</title>"
+        aFile.puts "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>"
+        aFile.puts "  <style>"
+        aFile.puts "    body { font-family: Arial, sans-serif; margin: 20px; }"
+        aFile.puts "    h1 { color: #333; }"
+        aFile.puts "    #gantt_chart { width: 100%; height: 600px; }"
+        aFile.puts "  </style>"
+        aFile.puts "</head>"
+        aFile.puts "<body>"
+        aFile.puts "  <h1>UDSim Project Timeline</h1>"
+        aFile.puts "  <div id=\"gantt_chart\"></div>"
+        aFile.puts ""
+        aFile.puts "  <script type=\"text/javascript\">"
+        aFile.puts "    google.charts.load('current', {'packages':['timeline']});"
+        aFile.puts "    google.charts.setOnLoadCallback(drawChart);"
+        aFile.puts ""
+        aFile.puts "    function drawChart() {"
+        aFile.puts "      var container = document.getElementById('gantt_chart');"
+        aFile.puts "      var chart = new google.visualization.Timeline(container);"
+        aFile.puts "      var dataTable = new google.visualization.DataTable();"
+        aFile.puts ""
+        aFile.puts "      dataTable.addColumn({ type: 'string', id: 'Person' });"
+        aFile.puts "      dataTable.addColumn({ type: 'string', id: 'Task' });"
+        aFile.puts "      dataTable.addColumn({ type: 'date', id: 'Start' });"
+        aFile.puts "      dataTable.addColumn({ type: 'date', id: 'End' });"
+        aFile.puts ""
+        aFile.puts "      dataTable.addRows(["
 
-        aFile.puts '$g->addGroup("' + $people.project_manager.name  + '","' + $people.project_manager.name + '","' + $people.project_manager.boss.name + '" );' + "\n"
-
-        i = 0
-        while i < @@gantt_people.length do
-          #aFile.puts '$g->addGroup("' + @@gantt_people[i].name  + '","' + @@gantt_people[i].name+ '","' + @@gantt_people[i].boss.name + '" );' + "\n"
-          #aFile.puts '$g->addGroup("' + @@gantt_people[i].name  + '","' +  @@gantt_people[i].boss.name + '" );' + "\n"
-          aFile.puts '$g->addGroup("' + @@gantt_people[i].name  + '","' +  @@gantt_people[i].name + '" );' + "\n"
-          i = i + 1
+        # Generate timeline data using the new structured approach
+        tasks_generated = []
+        
+        @@gantt_tasks.each do |task_key, person_data|
+          person_data.each do |person_name, task_info|
+            next unless task_info[:start_date] # Skip tasks without start date
+            
+            # Use actual end date if available, otherwise calculate reasonable duration
+            end_date = task_info[:end_date]
+            if end_date.nil?
+              # Calculate duration based on task type
+              task_name = task_info[:task_name] || ""
+              duration_days = case task_name.to_s
+                             when /design/ then 7    # Design tasks: ~1 week
+                             when /coding/ then 14   # Coding tasks: ~2 weeks  
+                             when /verification/ then 5  # Verification: ~1 week
+                             else 3  # Default: 3 days
+                             end
+              
+              begin
+                parsed_start = Date.parse(task_info[:start_date])
+                end_date = (parsed_start + duration_days).strftime("%Y-%m-%d")
+              rescue
+                end_date = task_info[:start_date] # Fallback to start date
+              end
+            end
+            
+            # Convert dates to JavaScript format
+            start_js = date_to_js(task_info[:start_date])
+            end_js = date_to_js(end_date)
+            
+            # Create user-friendly task name
+            display_task_name = task_key.gsub(/_/, '_')
+            
+            task_data = "        ['#{person_name}', '#{display_task_name}', #{start_js}, #{end_js}]"
+            tasks_generated << task_data
+          end
         end
-        #while i < $people.idle_people.length do
-        #  aFile.puts '$g->addGroup("' + $people.idle_people[i].name  +  '","' + $people.idle_people[i].name + '");'
-        #  i = i + 1
-        #end
-        #aFile << " ***********************************"<< @gantt_people[0].name <<@gantt_people[2].boss.name << "\n"
-        # design
-        @@people_date.each {|k,v|
-          next unless v[0]
-          aFile << "$g->addNewTask(\"" << k << "_" << v[0] << "\",\"" << v[2] << "\",\"" << v[3] << "\"," << "\"" << v[4] << "\"," << "\"100\"," << "\"" << v[0] << "_" << k << "\",\"" << v[1] << "\");" << "\n"
-        }
-        # coding
-        @@people_date.each {|k,v|
-          next unless v[5]
-          aFile << "$g->addNewTask(\"" << k << "_" << v[5] << "\",\"" << v[7] << "\",\"" << v[8] << "\"," << "\"" << v[9] << "\"," << "\"100\"," << "\"" << v[5] << "_" << k << "\",\"" << v[6] << "\");" << "\n"
-
-        }
-        #verification
-        @@people_date.each {|k,v|
-          next unless v[10]
-          aFile << "$g->addNewTask(\"" << k << "_" << v[10] << "\",\"" << v[12] << "\",\"" << v[13] << "\"," << "\"" << v[14] << "\"," << "\"100\"," << "\"" << v[10] << "_" << k << "\",\"" << v[11] << "\");" << "\n"
-
-        }
-
-        aFile.puts " $g->outputGantt();"
-        aFile.puts " ?> "
+        
+        # Write the tasks data
+        aFile.puts tasks_generated.join(",\n")
+        
+        aFile.puts "      ]);"
+        aFile.puts ""
+        aFile.puts "      var options = {"
+        aFile.puts "        timeline: {"
+        aFile.puts "          showRowLabels: true,"
+        aFile.puts "          showBarLabels: true,"
+        aFile.puts "          groupByRowLabel: true"
+        aFile.puts "        },"
+        aFile.puts "        backgroundColor: '#fafafa'"
+        aFile.puts "      };"
+        aFile.puts ""
+        aFile.puts "      chart.draw(dataTable, options);"
+        aFile.puts "    }"
+        aFile.puts "  </script>"
+        aFile.puts "</body>"
+        aFile.puts "</html>"
       end # end for file
+    end
+    
+    private
+    
+    def date_to_js(date)
+      # Convert UDSim date format to JavaScript Date constructor format
+      if date.nil?
+        # Default to today if date is nil
+        parsed_date = Date.today
+      elsif date.is_a?(String)
+        # Handle YYYY-MM-DD format from UDSim's to_date() method
+        if date.match(/^\d{4}-\d{2}-\d{2}$/)
+          begin
+            parsed_date = Date.parse(date)
+          rescue
+            parsed_date = Date.today
+          end
+        else
+          # Handle other string formats or default to today
+          parsed_date = Date.today
+        end
+      elsif date.respond_to?(:to_date)
+        # Handle WorkDate objects that have to_date method
+        begin
+          date_str = date.to_date
+          parsed_date = Date.parse(date_str)
+        rescue
+          parsed_date = Date.today
+        end
+      elsif date.is_a?(Date)
+        parsed_date = date
+      else
+        # Default fallback
+        parsed_date = Date.today
+      end
+      
+      return "new Date(#{parsed_date.year}, #{parsed_date.month - 1}, #{parsed_date.day})"
     end
   end # End of Person
 
