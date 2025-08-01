@@ -74,6 +74,7 @@ module UDSim
     $op_nsim         = 1
     $op_compile_time = 0.0
     $op_seed         = 1
+    $op_instant_partition = false
 
     argv.options do |opts|
       opts.banner = ''
@@ -96,6 +97,7 @@ module UDSim
       opts.on('-s', '--style=factor', Float, 'Coding Style') { |v| $op_coding_style = v }
       opts.on('-n', '--num-sims=value', Integer, 'Number of simulations') { |v| $op_nsim = v }
       opts.on('-e', '--seed=value', Integer, 'Random seed for reproducible results') { |v| $op_seed = v }
+      opts.on('-i', '--instant-partition', 'Enable instantaneous partitioning without overhead') { $op_instant_partition = true }
       opts.on('-v', '--[no-]verbose=[FLAG]', TrueClass, 'run verbosly') { |v| $op_verbose = v }
 
 

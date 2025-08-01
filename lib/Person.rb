@@ -145,7 +145,12 @@ module UDSim
         @approx_projects_hours = @approx_projects_hours + x
         @adjusted_hours        = calc_finish_hour(task, x)
       else
-        @adjusted_hours        = x
+        # For partition tasks with instant partitioning, use much smaller but reasonable time
+        if $op_instant_partition && (task.name == "partition" || task.name == "sub_partition")
+          @adjusted_hours = 8.0
+        else
+          @adjusted_hours        = x
+        end
       end
 
       task.adjusted_hours    = @adjusted_hours

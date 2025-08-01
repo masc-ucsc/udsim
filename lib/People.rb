@@ -17,6 +17,7 @@ module UDSim
     @@sub_managers  = 0
     @@manager_pool  = Array.new
     @@active_people2  = Array.new
+    @@num_of_people = 0
     @@teamsize = 0
     #-------------------------------------------
     def set_teamsize()
@@ -62,6 +63,7 @@ module UDSim
       @@active_people2 = Array.new(@active_people)
       puts "Person: done" if $op_verbose
       @num_of_people = @idle_people.length + @active_people.length
+      @@num_of_people = @num_of_people
       puts @num_of_people if $op_verbose
 
       @project_manager = @employee_pool[0]
@@ -81,6 +83,10 @@ module UDSim
     #------------------------------------------
     def People.active_people
       @@active_people2
+    end
+    
+    def People.num_of_people
+      @@num_of_people
     end
 
     #-------------------------------------------

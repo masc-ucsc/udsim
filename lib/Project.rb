@@ -386,6 +386,12 @@ module UDSim
       raw_hours = 0
       task_name = task.name
       effort = task.effort
+      
+      # For partition tasks with instant partitioning enabled, return much smaller but reasonable time
+      if $op_instant_partition && (task_name == "partition" || task_name == "sub_partition")
+        return 8.0  # 8 hours (1 day) instead of the normal much longer duration
+      end
+      
       task.sub_project.block.each { |blk|
         raw_hours = raw_hours + calc_raw_hours(blk, task_name, effort)
       }
@@ -528,17 +534,33 @@ module UDSim
     end
 
     def do_partition()
-      num_of_people = ((People.sub_managers).to_i - 1) * 2
-      num_of_people = 2 if num_of_people < 2
+      num_tasks = vertices()  # Number of available tasks
+      desired_partitions = ((People.num_of_people).to_i - 1) * 2
+      desired_partitions = 2 if desired_partitions < 2
+      
+      # Don't create more partitions than tasks available
+      num_partitions = [desired_partitions, num_tasks].min
+      
+      # If we have more people than tasks, do simple 1:1 assignment
+      if num_partitions >= num_tasks
+        puts("Simple 1:1 task assignment - #{num_tasks} tasks for #{People.num_of_people} people")
+        # Create simple 1:1 assignment - each partition gets exactly 1 task
+        (1..num_tasks).each do |i|
+          @@partition[i] = [i]
+          puts("partition #{i-1} has 1 jobs")
+        end
+        return
+      end
 
+      # Use MetisPartitioner for complex partitioning when we have fewer people than tasks
+      puts("Using MetisPartitioner - #{num_partitions} partitions for #{num_tasks} tasks")
       metis_data = generate_metis_format()
-
       partitioner = MetisBalancedPartitioner.new(metis_data)
-
       algorithms = [:multilevel, :fast_bfs, :fast_hash, :fast_random]
-      result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
+      result = partitioner.partition(num_partitions, algorithm: algorithms.sample)
 
       result[:partitions].each_with_index do |part, idx|
+        puts("partition #{idx} has #{part.length} jobs")
         @@partition[idx + 1] = part
       end
     end
