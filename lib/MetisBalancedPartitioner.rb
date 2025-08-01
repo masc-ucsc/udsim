@@ -39,7 +39,7 @@ class MetisBalancedPartitioner
     coarse_graphs = coarsen_graph
 
     # Phase 2: Initial partitioning on coarsest graph
-    coarsest_graph, coarsest_weights, vertex_mapping = coarse_graphs.last
+    coarsest_graph, _coarsest_weights, _vertex_mapping = coarse_graphs.last
     initial_partitions = initial_partition(coarsest_graph.vertices.to_a, k)
 
     # Phase 3: Uncoarsening and refinement
@@ -65,7 +65,7 @@ class MetisBalancedPartitioner
     laplacian = build_laplacian_matrix
 
     # Find k-1 smallest non-zero eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = compute_eigenvectors(laplacian, k)
+    _eigenvalues, eigenvectors = compute_eigenvectors(laplacian, k)
 
     # Use k-means clustering on eigenvector coordinates
     partitions = kmeans_cluster(eigenvectors, k)
@@ -140,10 +140,10 @@ class MetisBalancedPartitioner
 
         # Choose vertex with highest connection weight to current partition
         best_candidate = candidates.group_by { |c| c[:vertex] }
-                                  .map { |vertex, connections|
-                                    { vertex: vertex, total_weight: connections.sum { |c| c[:weight] } }
-                                  }
-                                  .max_by { |c| c[:total_weight] }
+          .map { |vertex, connections|
+            { vertex: vertex, total_weight: connections.sum { |c| c[:weight] } }
+          }
+          .max_by { |c| c[:total_weight] }
 
         if best_candidate
           current_partition << best_candidate[:vertex]
@@ -459,8 +459,8 @@ class MetisBalancedPartitioner
 
       break if oversized.empty? || undersized.empty?
 
-      oversized_partition, oversized_idx = oversized.first
-      undersized_partition, undersized_idx = undersized.first
+      oversized_partition, _oversized_idx = oversized.first
+      undersized_partition, _undersized_idx = undersized.first
 
       # Move a vertex with minimal cut increase
       best_vertex = oversized_partition.min_by do |v|
@@ -479,7 +479,7 @@ class MetisBalancedPartitioner
 
   def build_laplacian_matrix
     n = @vertices.length
-    vertex_to_idx = @vertices.each_with_index.to_h
+    _vertex_to_idx = @vertices.each_with_index.to_h
 
     # Build adjacency matrix
     adj_matrix = Matrix.zero(n)
@@ -544,78 +544,78 @@ end
 # Usage example
 if __FILE__ == $0
   graph_data = """72 53 10 1
-43 17 18 19 20 27 36 37
-72 8 13 15 22 53 63
-9 32 49
-655 44
-109 11
-124 8
-4
-114 10 6 9 2
-4 8
-381 8
-173 5
-84 13
-328 22 15 2 11 12
-71 15
-276 14 2
-41
-14 1
-107 1
-116 1
-44 1
-48 23
-30 2
-209 21 25 24
-38 23
-18 23
-414 29
-44 1
-19 29
-26 26 28
-142 34
-293 34
-248 3
-116 35
-227 30 31 32 38 39
-151 33 40
-44 1
-44 1
-76 34
-66 34
-98 35
-369 42
-168 41
-1
-179 4
-58 46
-227 44 45 47 51
-409 49 48
-56 47
-86 3
-7
-13 46
-1
-93 2
-502 53
-355 61
-623 61
-102 61
-99 61
-163 61
-47 61
-344 54 55 56 59 60 57 58
-1889 63
-1536 68 67 64 65 66 2
-347 63
-155 63
-137 63
-112 63
-30 63
-1
-72
-28
-1"""
+    43 17 18 19 20 27 36 37
+    72 8 13 15 22 53 63
+    9 32 49
+    655 44
+    109 11
+    124 8
+    4
+    114 10 6 9 2
+    4 8
+    381 8
+    173 5
+    84 13
+    328 22 15 2 11 12
+    71 15
+    276 14 2
+    41
+    14 1
+    107 1
+    116 1
+    44 1
+    48 23
+    30 2
+    209 21 25 24
+    38 23
+    18 23
+    414 29
+    44 1
+    19 29
+    26 26 28
+    142 34
+    293 34
+    248 3
+    116 35
+    227 30 31 32 38 39
+    151 33 40
+    44 1
+    44 1
+    76 34
+    66 34
+    98 35
+    369 42
+    168 41
+    1
+    179 4
+    58 46
+    227 44 45 47 51
+    409 49 48
+    56 47
+    86 3
+    7
+    13 46
+    1
+    93 2
+    502 53
+    355 61
+    623 61
+    102 61
+    99 61
+    163 61
+    47 61
+    344 54 55 56 59 60 57 58
+    1889 63
+    1536 68 67 64 65 66 2
+    347 63
+    155 63
+    137 63
+    112 63
+    30 63
+    1
+    72
+    28
+    1"""
 
   partitioner = MetisBalancedPartitioner.new(graph_data)
 

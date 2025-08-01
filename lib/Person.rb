@@ -145,7 +145,7 @@ module UDSim
 
     #-------------------------------------------
     def calc_finish_hour(task, raw_hours)   ## only for giving the estimate
-#      factor = @trend_learn.get_working_up_trend(@approx_projects_hours, @initial_productivity, @target_productivity)
+      #      factor = @trend_learn.get_working_up_trend(@approx_projects_hours, @initial_productivity, @target_productivity)
       factor = @trend_learn.adjust_skill(@experience)
       skill = @initial_productivity * get_skill(task.name)
 
@@ -193,7 +193,7 @@ module UDSim
 
       task.do_work(@effectiveness)
 
-#       @@rayleigh[$timeline.workdate.to_month] = @@rayleigh[$timeline.workdate.to_month] << @name
+      #       @@rayleigh[$timeline.workdate.to_month] = @@rayleigh[$timeline.workdate.to_month] << @name
       if ((task.hours > 0.0 && task.hours <2.0 )  && task.flag == 0 )  ## Needed only if generating gantt chart
         task.flag = 1
         if $op_gantt
@@ -267,7 +267,7 @@ module UDSim
 
       comm =  @trend_sync.random_gaussian()/meeting_size #/@@active_tasks.size
 
-#      puts "jojo2 Comm:" + comm.to_s + " : " + meeting_size.to_s + " : "  + @@active_tasks.size.to_s
+      #      puts "jojo2 Comm:" + comm.to_s + " : " + meeting_size.to_s + " : "  + @@active_tasks.size.to_s
 
       @@active_tasks.each { |t|
         next if t.hours < 0
@@ -293,7 +293,7 @@ module UDSim
       ratio = (ratio+1).to_i
       ratio = 1 if ratio < 0
       ratio = ratio + 1
-      ncompilation = Random.new.rand(0..ratio)
+      ncompilation = rand(ratio + 1)
       overhead = ncompilation * $op_compile_time/60
       overhead = 0.99 if overhead > 1
 
@@ -313,39 +313,39 @@ module UDSim
       @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
 
       # Same delay for a random task of the communication recipient
-#      t = @@active_tasks[rand(@@active_tasks.size())];
-#      t.hours =  t.hours-overhead
-#      @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
+      #      t = @@active_tasks[rand(@@active_tasks.size())];
+      #      t.hours =  t.hours-overhead
+      #      @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
 
       # Same delay for a random task of the communication recipient only if active
-#      t = @@active_tasks[rand(@@active_tasks.size())];
-#      t.hours =  t.hours-overhead
-#      @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
+      #      t = @@active_tasks[rand(@@active_tasks.size())];
+      #      t.hours =  t.hours-overhead
+      #      @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
 
-#       id =  rand(9)  # generate a random id and call
-#       pester = "engineer_"+id.to_s
-#       x_flg = 0
+      #       id =  rand(9)  # generate a random id and call
+      #       pester = "engineer_"+id.to_s
+      #       x_flg = 0
 
-#       return if pester == @name # Do not pester yoursel
+      #       return if pester == @name # Do not pester yoursel
 
-#       @@active_tasks.each { |t|
-#         if (t.person.name == pester && t.hours > 0)
-#           x_flg = 1
-#           puts "Pestering someone...." if $op_debug
-#           t.hours =  t.hours-overhead
-#           @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
-#         end
-#       }
+      #       @@active_tasks.each { |t|
+      #         if (t.person.name == pester && t.hours > 0)
+      #           x_flg = 1
+      #           puts "Pestering someone...." if $op_debug
+      #           t.hours =  t.hours-overhead
+      #           @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
+      #         end
+      #       }
 
-#       if x_flg == 1 then
-#         @@active_tasks.each{ |t|
-#           if (t.person.name == self.name )
-#             t.hours = t.hours-overhead
-#             @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
-#           end
-#         }
-#       end
-#       x_flg = 0
+      #       if x_flg == 1 then
+      #         @@active_tasks.each{ |t|
+      #           if (t.person.name == self.name )
+      #             t.hours = t.hours-overhead
+      #             @@communication[$timeline.workdate.day] = @@communication[$timeline.workdate.day]+overhead  if $op_overhead
+      #           end
+      #         }
+      #       end
+      #       x_flg = 0
     end
 
     #-------------------------------------------
@@ -360,7 +360,7 @@ module UDSim
         neighbors.each { |elem|
           if neighbors2.include?(elem)
             yield p
-        #    break
+            #    break
           end
         }
       }

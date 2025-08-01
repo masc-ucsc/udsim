@@ -16,24 +16,24 @@ module UDSim
         @hour = @hour - 8 ## 8 hour working day
         @day = @day + 1
       end
-# No need to worry about weekends. Just report "Worked days ~20 month"
-#         wday = @day % 7
-#         if wday == 5
-#           @day = @day + 2
-#           @hour = 9
-#         elsif wday == 6
-#           ## Just in the weird case that someone skipped the Saturday test (new worker?)
-#           @day = @day + 1
-#           @hour = 9
-#         end
-#       end
-#      while @hour < 0
-#        @hour = @hour + 24
-#        @day = @day - 1
-#        if @day < 0
-#          @day = 5
-#        end
-#      end
+      # No need to worry about weekends. Just report "Worked days ~20 month"
+      #         wday = @day % 7
+      #         if wday == 5
+      #           @day = @day + 2
+      #           @hour = 9
+      #         elsif wday == 6
+      #           ## Just in the weird case that someone skipped the Saturday test (new worker?)
+      #           @day = @day + 1
+      #           @hour = 9
+      #         end
+      #       end
+      #      while @hour < 0
+      #        @hour = @hour + 24
+      #        @day = @day - 1
+      #        if @day < 0
+      #          @day = 5
+      #        end
+      #      end
     end
 
     def initialize(d=0,h=0)
@@ -124,50 +124,50 @@ module UDSim
       return @current_date
     end
 
-   def add_work(task)
-     time = task.person.schedule_hour()
-     event = Event.new(task.person, task, time)
-     @list.push(event);
-     @list = @list.sort_by { |k|
-       k.start_date
-     }
-##     puts @current_date.strftime("%d/%m/%y %I%p") + "----" + time.strftime("%d/%m/%y %I%p")
-   end
+    def add_work(task)
+      time = task.person.schedule_hour()
+      event = Event.new(task.person, task, time)
+      @list.push(event);
+      @list = @list.sort_by { |k|
+        k.start_date
+      }
+      ##     puts @current_date.strftime("%d/%m/%y %I%p") + "----" + time.strftime("%d/%m/%y %I%p")
+    end
 
-   def do_next_event()
+    def do_next_event()
 
-     event = @list.first
-     return 0 unless event.start_date <= @current_date
-     @list.delete_at(0)
-     conta = 0
-     while true
-       conta = conta + event.person.do_work(event.task)
-       event = @list.first
-       break unless event and event.start_date <= @current_date
-       @list.delete_at(0)
-     end
+      event = @list.first
+      return 0 unless event.start_date <= @current_date
+      @list.delete_at(0)
+      conta = 0
+      while true
+        conta = conta + event.person.do_work(event.task)
+        event = @list.first
+        break unless event and event.start_date <= @current_date
+        @list.delete_at(0)
+      end
 
-     #$people.add_people_late
-     return conta
-   end
+      #$people.add_people_late
+      return conta
+    end
 
-   def run(limit_hours)
-     conta = 0
-     while limit_hours > @current_date.to_i
-       conta = conta + do_next_event()
-#       if conta > 0 and !@list.empty?() and @current_date.day != @list.first.start_date.day
-##         puts @current_date.to_s +  ",#{conta}"
-#         conta = 0
-#       end
+    def run(limit_hours)
+      conta = 0
+      while limit_hours > @current_date.to_i
+        conta = conta + do_next_event()
+        #       if conta > 0 and !@list.empty?() and @current_date.day != @list.first.start_date.day
+        ##         puts @current_date.to_s +  ",#{conta}"
+        #         conta = 0
+        #       end
 
-       ## Simulation finished
-       break if (@list.empty?())
+        ## Simulation finished
+        break if (@list.empty?())
 
-       event = @list.first
-       @current_date = event.start_date
-     end
+        event = @list.first
+        @current_date = event.start_date
+      end
 
-     return conta
-   end
+      return conta
+    end
   end
 end

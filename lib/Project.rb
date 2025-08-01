@@ -72,9 +72,9 @@ module UDSim
       People.each_sub_mgr { |m|
         next unless m.job_pool.include?(task.sub_project.name)
         # Find a person qualified and not already working for this tasks
-       # m.dependants.each { |p|
-          print "Length of active people" ,People.active_people.length, "\n" if $op_verbose
-          People.active_people.each{  |p|
+        # m.dependants.each { |p|
+        print "Length of active people" ,People.active_people.length, "\n" if $op_verbose
+        People.active_people.each{  |p|
           next if p.get_skill(task.name) <= 0.01
           if person == nil
             person = p
@@ -94,8 +94,8 @@ module UDSim
               person = p
             end
           end
-       # }
-	}
+          # }
+        }
       }
 
       if person == nil && task.name == "partition" or task.name == "start" then
@@ -137,12 +137,12 @@ module UDSim
       task_name = task.name
       for_jobpool(max_hours, task_name, effort, effectiveness)
       if People.sub_managers_empty?
-      	   task.sub_partition = false
-            @@job_pool.each{|p|
-       	       	$people.project_manager.job_pool << p.name
-            }
+        task.sub_partition = false
+        @@job_pool.each{|p|
+          $people.project_manager.job_pool << p.name
+        }
       else
-            task.sub_partition = true
+        task.sub_partition = true
       end
     end
 
@@ -193,202 +193,202 @@ module UDSim
     end
 
 
-  def work_sub_managers(task, effectiveness)
+    def work_sub_managers(task, effectiveness)
       effort = task.effort
       assign_jobs_submgrs(task, effort, effectiveness)
-  end
-
-  def assign_jobs_submgrs(task, effort, effectiveness)
-    if @@i > 1 then
-      manager_task(task, effort, effectiveness)
-      if @@i == People.sub_managers
-        task.sub_partition =false    # used to call work_sub_managers
-      end
-      return
     end
 
-    if People.sub_managers_empty?
-      puts "Only one manager...small team :)"
-      $people.project_manager.job_pool = @@job_pool
-      @@sub_job_pool = @@job_pool
-    else
-      jobs = Array.new(@@job_pool)
-      if $op_verbose
-        print "# sub managers", People.sub_managers, "\n"
-
-        puts "##############################"
-        puts "DETAILS OF JOB POOL..............."
-        jobs.each{|t|
-          puts t.name
-          t.block.each{|b| print b.name, "\t"}
-          print "\n"
-        }
-        puts "##############################"
-      end
-      sub_count = 0
-      count = People.sub_managers # does not include the main manager.
-      #count = count + 1 if count < 9
-
-      z= Array.new
-      tmp_length = (jobs.length.to_f/count.to_f)
-      mod = jobs.length % count
-      count.times{ |i|
-        prj = Project.new
-        prj.name = "sub_main_"+"#{sub_count}"
-        sub_count = sub_count+1
-        z <<  jobs.slice!(0, tmp_length)
-        if mod > 0
-          z << jobs.slice!(0,1)
-          mod = mod - 1
+    def assign_jobs_submgrs(task, effort, effectiveness)
+      if @@i > 1 then
+        manager_task(task, effort, effectiveness)
+        if @@i == People.sub_managers
+          task.sub_partition =false    # used to call work_sub_managers
         end
-        z.flatten!
-        z.each{|p|
-          p.block.each{|v|
-            prj.block.push(v)
-          }
-        }
-        @@job_array << prj
-        z =Array.new
-      }  ### Assign jobs to all first lvl managers
-      #print "Are all jobs assigned?", jobs.length, "\n" if $op_debug
-      i = 0
-      while !jobs.empty? do
-        z <<  jobs.slice!(0,1)
-        z.flatten!
-        z.each{|p|
-          p.block.each{|v|
-            @@job_array[i].block.push(v)
-          }
-
-        }
-        i= i+1 if i < @@job_array.length
+        return
       end
-      print "Original # of jobs ", @@job_array.length, "All jobs should be assigned: Checking length of job_array: it should be 0 & it is : ", jobs.length,"\n" if $op_debug
-      manager_task(task, effort, effectiveness)
-    end
-  end
 
-  def manager_task(task, effort, effectiveness)
-    return if @@j >= People.sub_managers or @@job_array.length == 0
+      if People.sub_managers_empty?
+        puts "Only one manager...small team :)"
+        $people.project_manager.job_pool = @@job_pool
+        @@sub_job_pool = @@job_pool
+      else
+        jobs = Array.new(@@job_pool)
+        if $op_verbose
+          print "# sub managers", People.sub_managers, "\n"
 
-    print "Length of job_array ", @@job_array.length, "\n" if $op_debug
+          puts "##############################"
+          puts "DETAILS OF JOB POOL..............."
+          jobs.each{|t|
+            puts t.name
+            t.block.each{|b| print b.name, "\t"}
+            print "\n"
+          }
+          puts "##############################"
+        end
+        sub_count = 0
+        count = People.sub_managers # does not include the main manager.
+        #count = count + 1 if count < 9
 
-    m  = People.manager_pool(@@j)
-    prj = Project.new
-    prj = @@job_array.pop
-
-    task.create_submanager_task(m,  prj, effort, effectiveness)
-    @@j =@@j+1
-    @@job_array.each{|job| print job.name, "\t"}  if $op_verbose
-
-    if (@@j == People.sub_managers) then
-      if @@job_array.length > 0
-        # means that all from job pool are not assigned to sub managers"
-        # if main manager has some dependants who are engineers then
-        # assigning the remaining jobs to main manager
-        flag = false
-        $people.project_manager.dependants.each{|dep|
-          if dep.type =="engineer"
-            flag = true
+        z= Array.new
+        tmp_length = (jobs.length.to_f/count.to_f)
+        mod = jobs.length % count
+        count.times{ |i|
+          prj = Project.new
+          prj.name = "sub_main_"+"#{sub_count}"
+          sub_count = sub_count+1
+          z <<  jobs.slice!(0, tmp_length)
+          if mod > 0
+            z << jobs.slice!(0,1)
+            mod = mod - 1
           end
-        }
-        if flag == true  # if flag is true then all sub projects are assigned
-          $people.project_manager.job_pool << @@job_array
-          $people.project_manager.job_pool << @@job_array
-        else
-          #	print "Length of job array ", @@job_array.length,  "\n"
-          #       		print "WARNING: All sub jobs not assigned!\n"
-          #exit(-3)
-          # TODO: Find a way to assign the remaining jobs in job_array to lvl1 manager
+          z.flatten!
+          z.each{|p|
+            p.block.each{|v|
+              prj.block.push(v)
+            }
+          }
+          @@job_array << prj
+          z =Array.new
+        }  ### Assign jobs to all first lvl managers
+        #print "Are all jobs assigned?", jobs.length, "\n" if $op_debug
+        i = 0
+        while !jobs.empty? do
+          z <<  jobs.slice!(0,1)
+          z.flatten!
+          z.each{|p|
+            p.block.each{|v|
+              @@job_array[i].block.push(v)
+            }
+
+          }
+          i= i+1 if i < @@job_array.length
         end
+        print "Original # of jobs ", @@job_array.length, "All jobs should be assigned: Checking length of job_array: it should be 0 & it is : ", jobs.length,"\n" if $op_debug
+        manager_task(task, effort, effectiveness)
       end
     end
 
-  end
+    def manager_task(task, effort, effectiveness)
+      return if @@j >= People.sub_managers or @@job_array.length == 0
 
-  def create_sub_jobs(task, effort) #partitioning the project into individual jobs for sub manager
-    return if task.person.type != "sub_manager"
-    return if task.person.job_pool.length != 0
+      print "Length of job_array ", @@job_array.length, "\n" if $op_debug
 
-    task_name = task.name
-#    puts "Creating sub jobs " + task.name +
-#      " sub_project " + task.sub_project.name +
-#      " person " + task.person.name
+      m  = People.manager_pool(@@j)
+      prj = Project.new
+      prj = @@job_array.pop
 
-    max_hours = 10 # FIXME: DONT hardcode the value here
-    prj = Project.new
-    hours = 0
-    prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
-    hours = 0
-    inserted = false
-    p  = task.person
-    task.sub_project.block.each{|x| #print x.name, x.class, "\n"# iterating over each main_project
-      hours =  hours + calc_raw_hours(x, task_name, effort)
-      prj.block.push(x)
-      if hours > max_hours  then
+      task.create_submanager_task(m,  prj, effort, effectiveness)
+      @@j =@@j+1
+      @@job_array.each{|job| print job.name, "\t"}  if $op_verbose
+
+      if (@@j == People.sub_managers) then
+        if @@job_array.length > 0
+          # means that all from job pool are not assigned to sub managers"
+          # if main manager has some dependants who are engineers then
+          # assigning the remaining jobs to main manager
+          flag = false
+          $people.project_manager.dependants.each{|dep|
+            if dep.type =="engineer"
+              flag = true
+            end
+          }
+          if flag == true  # if flag is true then all sub projects are assigned
+            $people.project_manager.job_pool << @@job_array
+            $people.project_manager.job_pool << @@job_array
+          else
+            #	print "Length of job array ", @@job_array.length,  "\n"
+            #       		print "WARNING: All sub jobs not assigned!\n"
+            #exit(-3)
+            # TODO: Find a way to assign the remaining jobs in job_array to lvl1 manager
+          end
+        end
+      end
+
+    end
+
+    def create_sub_jobs(task, effort) #partitioning the project into individual jobs for sub manager
+      return if task.person.type != "sub_manager"
+      return if task.person.job_pool.length != 0
+
+      task_name = task.name
+      #    puts "Creating sub jobs " + task.name +
+      #      " sub_project " + task.sub_project.name +
+      #      " person " + task.person.name
+
+      max_hours = 10 # FIXME: DONT hardcode the value here
+      prj = Project.new
+      hours = 0
+      prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
+      hours = 0
+      inserted = false
+      p  = task.person
+      task.sub_project.block.each{|x| #print x.name, x.class, "\n"# iterating over each main_project
+        hours =  hours + calc_raw_hours(x, task_name, effort)
+        prj.block.push(x)
+        if hours > max_hours  then
+          p.job_pool << prj.name
+          @@sub_job_pool << prj
+          #        print "length", @@sub_job_pool.length
+          hours = 0
+          inserted = true
+          @@n_sub_job_count = @@n_sub_job_count+1
+          prj = Project.new
+          prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
+          #        puts "Creating sub job " + prj.name
+          inserted = false
+        end
+      }
+      if hours > 0  and (!inserted) then
         p.job_pool << prj.name
         @@sub_job_pool << prj
-#        print "length", @@sub_job_pool.length
-        hours = 0
-        inserted = true
         @@n_sub_job_count = @@n_sub_job_count+1
+        inserted = false
+        hours = 0
         prj = Project.new
         prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
-#        puts "Creating sub job " + prj.name
+      end
+      if hours > 0  and (!inserted) then
+        p.job_pool << prj.name
+        @@sub_job_pool << prj
+        @@n_sub_job_count = @@n_sub_job_count+1
         inserted = false
+        hours = 0
+        prj = Project.new
+        prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
       end
-    }
-    if hours > 0  and (!inserted) then
-      p.job_pool << prj.name
-      @@sub_job_pool << prj
-      @@n_sub_job_count = @@n_sub_job_count+1
-      inserted = false
-      hours = 0
-      prj = Project.new
-      prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
-    end
-    if hours > 0  and (!inserted) then
-      p.job_pool << prj.name
-      @@sub_job_pool << prj
-      @@n_sub_job_count = @@n_sub_job_count+1
-      inserted = false
-      hours = 0
-      prj = Project.new
-      prj.name = "sub_prj"+ ".#{@@n_sub_job_count}"
-    end
 
-    print "# sub jobs after partition by sub_managers (CUMMULATIVE)", @@n_sub_job_count, "\n" if $op_debug
+      print "# sub jobs after partition by sub_managers (CUMMULATIVE)", @@n_sub_job_count, "\n" if $op_debug
       if $op_test
-    	#### Job Partitioning ###
-     	puts "##############################"
-     	puts "JOB PARTITIONING......................"
-      People.each_sub_mgr { |m|
-        print "NAME OF MANAGER: ", m.name,  " his boss is : ", m.boss, "\n"
-        #cyclo = 0
-        puts "JOB POOL OF  ", m.name, " IS THE FOLL: "
-        m.job_pool.each{|job|
-          print job ,"\n"
-          #job.block.each{|mod| cyclo = cyclo + mod.cyclo
-          #print mod.name, ","
-          #}
+        #### Job Partitioning ###
+        puts "##############################"
+        puts "JOB PARTITIONING......................"
+        People.each_sub_mgr { |m|
+          print "NAME OF MANAGER: ", m.name,  " his boss is : ", m.boss, "\n"
+          #cyclo = 0
+          puts "JOB POOL OF  ", m.name, " IS THE FOLL: "
+          m.job_pool.each{|job|
+            print job ,"\n"
+            #job.block.each{|mod| cyclo = cyclo + mod.cyclo
+            #print mod.name, ","
+            #}
+          }
+          #print "\n"
+          #uts "TOTAL CYCLO "+ cyclo.to_s
+          #print "\n"
+          print "DEPENDENTS OF ", m.name ," ARE: "
+          m.dependants.each {|dep| print dep.name, ","}
+          print "\n"
         }
-        #print "\n"
-        #uts "TOTAL CYCLO "+ cyclo.to_s
-        #print "\n"
-        print "DEPENDENTS OF ", m.name ," ARE: "
-        m.dependants.each {|dep| print dep.name, ","}
-        print "\n"
-      }
-   	puts "################################"
+        puts "################################"
       end
-  end
+    end
 
     def raw_hours(task)
       raw_hours = 0
       task_name = task.name
       effort = task.effort
       task.sub_project.block.each { |blk|
-       raw_hours = raw_hours + calc_raw_hours(blk, task_name, effort)
+        raw_hours = raw_hours + calc_raw_hours(blk, task_name, effort)
       }
       raw_hours = 24 if raw_hours < 24 # 24 hours work is the min
       return raw_hours
@@ -413,10 +413,10 @@ module UDSim
       #hour = 1.5 if hour < 1.5 # .5 hour work is the min for each file
       hour = 0.1 if hour < 0.1 # .5 hour work is the min for each file
 
-     return hour
+      return hour
     end
 
- public
+    public
     def create_adjHash()
       @@cycloHash   = Hash.new
       @@locHash     = Hash.new
@@ -481,76 +481,76 @@ module UDSim
       write_file()
     end
 
-   def get_key(project)
-     tmp = Array.new
-     project.block.each{|job|
-       tmp << @@module_key[job].name if @@module_key[job] #FIXME: if condition added for SCALE
-     }
-     tmp.uniq!
-     return tmp
-   end
+    def get_key(project)
+      tmp = Array.new
+      project.block.each{|job|
+        tmp << @@module_key[job].name if @@module_key[job] #FIXME: if condition added for SCALE
+      }
+      tmp.uniq!
+      return tmp
+    end
 
-   ##############################################
-   ##   Making the files for the hmetis program.
-   ##   The input file is: mytest.hgr
-   ##   The output file is:mytest.hgr.part.4  ( tested only for 4 employees.)
-   ##   Not yet using all this.
-   ############################################
-   private
-   def vertices()
-     return @@cycloHash.length
-   end
+    ##############################################
+    ##   Making the files for the hmetis program.
+    ##   The input file is: mytest.hgr
+    ##   The output file is:mytest.hgr.part.4  ( tested only for 4 employees.)
+    ##   Not yet using all this.
+    ############################################
+    private
+    def vertices()
+      return @@cycloHash.length
+    end
 
-   def edges()
-     length = 0
-       	for i in 1 .. @@cycloHash.length do
-         	if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
-       			val = @@adjHash.fetch(i)
-       			key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
-       			key.each {|a|
-              key.delete(a) if not a.first ==  i # If delete here, counting edges fails
-            }
+    def edges()
+      length = 0
+      for i in 1 .. @@cycloHash.length do
+        if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
+          val = @@adjHash.fetch(i)
+          key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
+          key.each {|a|
+            key.delete(a) if not a.first ==  i # If delete here, counting edges fails
+          }
           length += val.length
-            if key[0]
-              key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
-              ### check if this key is value for some one else
-              for j in 1 .. @@cycloHash.length do
-                if ( j.to_i != i.to_i && @@adjHash.has_key?(j))
-                  valx = @@adjHash.fetch(j)
-                  if (valx.include?(key_name))
-                    length += 1
-                  end
+          if key[0]
+            key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
+            ### check if this key is value for some one else
+            for j in 1 .. @@cycloHash.length do
+              if ( j.to_i != i.to_i && @@adjHash.has_key?(j))
+                valx = @@adjHash.fetch(j)
+                if (valx.include?(key_name))
+                  length += 1
                 end
               end
             end
+          end
         end
       end
-     return length
-   end
+      return length
+    end
 
-   def write_file()
-     #num_of_people = (($people.num_of_people).to_i-1)*2
+    def write_file()
+      #num_of_people = (($people.num_of_people).to_i-1)*2
 
-     num_of_people = ((People.sub_managers).to_i-1)*2
-     num_of_people = 2 if num_of_people < 2
+      num_of_people = ((People.sub_managers).to_i-1)*2
+      num_of_people = 2 if num_of_people < 2
 
-     @@tmp_counter+=1
-     tmpFil = Tempfile.new("#{$project_file_name}_#{@@tmp_counter}.hgr")
+      @@tmp_counter+=1
+      tmpFil = Tempfile.new("#{$project_file_name}_#{@@tmp_counter}.hgr")
 
-     File.open(tmpFil.path, "w") { |aFile|
-       ### line 1 in the .hgr file
-       	aFile << vertices() << SPACE << edges()<<(SPACE)<<(FMT)<< SPACE << NCON << ("\n")
-       ###
+      File.open(tmpFil.path, "w") { |aFile|
+        ### line 1 in the .hgr file
+        aFile << vertices() << SPACE << edges()<<(SPACE)<<(FMT)<< SPACE << NCON << ("\n")
+        ###
 
-       	### subsequent lines in the file
-       	@mem = Hash.new {|h,k| h[k] = Array.new}
+        ### subsequent lines in the file
+        @mem = Hash.new {|h,k| h[k] = Array.new}
         conta = 0
-       	for i in 1 .. @@cycloHash.length do
+        for i in 1 .. @@cycloHash.length do
           flag = false
-         	if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
-       			val = @@adjHash.fetch(i)
-       			key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
-       			key.each {|a|
+          if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
+            val = @@adjHash.fetch(i)
+            key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
+            key.each {|a|
               key.delete(a) if not a.first ==  i # If delete here, counting edges fails
             }
             if key[0]
@@ -571,29 +571,29 @@ module UDSim
                 end
               end
             end
-             ###
+            ###
 
-           		#check the val.length in the adjHash , go through that and put all the connections.
+            #check the val.length in the adjHash , go through that and put all the connections.
 
-           		if (val.length > 0 )  then
-             			# put all these conenction
-             			if (flag == false)
-             			#	aFile << @@cycloHash[@@name_idHash.index(i).name] << SPACE
-             				aFile <<  @@locHash[@@name_idHash.key(i).name] << SPACE
-                    conta = conta + 1
-             			end
-                  val.each {|v|
-                    id = @@name_idHash[v]
-                    if (@@adjHash.has_key?(id))then  @mem[id] = @mem[id].push(i) end
-                    aFile <<  id << (SPACE)
-                    conta = conta + 1
-                  }
-           			aFile << "\n"
-           		else
-              			aFile << @@cycloHash[@@name_idHash.key(i).name] << "\n"    ## val.length == 0
+            if (val.length > 0 )  then
+              # put all these conenction
+              if (flag == false)
+                #	aFile << @@cycloHash[@@name_idHash.index(i).name] << SPACE
+                aFile <<  @@locHash[@@name_idHash.key(i).name] << SPACE
+                conta = conta + 1
+              end
+              val.each {|v|
+                id = @@name_idHash[v]
+                if (@@adjHash.has_key?(id))then  @mem[id] = @mem[id].push(i) end
+                aFile <<  id << (SPACE)
+                conta = conta + 1
+              }
+              aFile << "\n"
+            else
+              aFile << @@cycloHash[@@name_idHash.key(i).name] << "\n"    ## val.length == 0
               #			aFile <<  @@locHash[@@name_idHash.key(i).name] << "\n"    ## val.length == -1
-           		end
-         	else  ## for members that are not keys in the adjHash...which means that they are stored in the value part of the hash
+            end
+          else  ## for members that are not keys in the adjHash...which means that they are stored in the value part of the hash
             if !@@name_idHash.key(i)
               print "NOTWORKING:  i", i, "\n"
               next
@@ -616,80 +616,28 @@ module UDSim
               }
               aFile << "\n"
             end
-         	end
-        	flag = false
+          end
+          flag = false
         end  ### end of for
         puts conta
 
-     }
+      }
 
-     filename = "#{tmpFil.path}.part.#{num_of_people}"
-     if File.exist? filename
-       File.delete filename
-     end
-      puts("2.NNNNNN")
-     if edges() == 0
-       read_file(filename, "#{tmpFil.path}")
-       return
-     end
+      filename = "#{tmpFil.path}.part.#{num_of_people}"
+      if File.exist? filename
+        File.delete filename
+      end
 
-     if $op_kmetis
-        system("#{$op_kmetis} #{tmpFil.path} #{num_of_people}")
-        system("cp #{tmpFil.path} graph.#{@@tmp_counter}")
-        puts("1.HERE")
-     else
-        puts("HERE")
-        graph_data  = File.read(tmpFil.path)
-        partitioner = MetisBalancedPartitioner.new(graph_data)
+      graph_data  = File.read(tmpFil.path)
+      partitioner = MetisBalancedPartitioner.new(graph_data)
 
-        algorithms = [:multilevel, :greedy_growth, :kernighan_lin]
-        result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
+      algorithms = [:multilevel, :greedy_growth, :kernighan_lin]
+      result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
 
-        result[:partitions].each_with_index do |part, idx|
-          @@partition[idx+1] = part
-        end
-     end
-
-     if File.exist? filename
-       read_file(filename, "#{tmpFil.path}")
-       File.delete filename
-     end
-   end
-
-   def read_file(filename, hgrfile)
-     counter = 1
-     if File.exist? filename
-       File.open(filename, "r") { |aFile|
-         while(line=aFile.gets)
-           @@partition[line].push(counter)   ## Partitioned code will be in this hash
-           counter=counter+1
-         end
-       }
-     else
-       puts "Check that there are no edges in the graph"
-       File.open(hgrfile , "r") { |aFile|
-         aFile.gets
-         while line=aFile.gets
-           @@partition[line].push(counter)   ## Partitioned code will be in this hash
-           counter=counter+1
-         end
-       }
-     end
-
-     #### Only for printing purposes..Comment it
-    # @@partition.each{|key, val|
-    #              val.each{ |v|
-    #                              if (v != nil)  then
-    #                                 if (@@name_idHash.index(v).instance_of?(ProjectBlock))  then
-    #                                       print @@name_idHash.index(v).nname(), ","
-    #                                  end
-    #                              end
-    #                }
-    #               print "\n"
-   #}  ## outputs the partition of the project depending on the number of the employees.
-     #####
-
-   end
+      result[:partitions].each_with_index do |part, idx|
+        @@partition[idx+1] = part
+      end
+    end
 
   end  #Class Project End
 

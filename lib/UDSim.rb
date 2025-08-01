@@ -38,8 +38,8 @@ module UDSim
     tmp = Person.meeting.sort
     File.open($op_meeting, "w") { |tmpFile|
       tmp.each { |k,v|
-#        v.uniq!
-#        tmpFile << k.to_s << " " << v.length << "\n"
+        #        v.uniq!
+        #        tmpFile << k.to_s << " " << v.length << "\n"
         tmpFile << k.to_s << " " << (v/$op_nsim).to_s << "\n"
       }
     }
@@ -73,8 +73,8 @@ module UDSim
     $op_dummy          = false
     $op_coding_style   = 1
     $op_nsim           = 1
-    $op_kmetis         = nil
     $op_compile_time   = 0.0
+    $op_seed           = 1
 
     argv.options { |opts|
       opts.banner = ""
@@ -88,7 +88,6 @@ module UDSim
       opts.on("-x", "--comm", "no async comm")                  { $op_comm    = false }
       opts.on("-y", "--meet", "no sync comm")                   { $op_meet    = false }
       opts.on("-z", "--defect", "no defect")                    { $op_defect    = false }
-      opts.on("-p" , "--pmetis=id", String, "pmetis path")      { |v| $op_kmetis = v }
       opts.on("-g", "--gantt=#filename", String , "gantt file") {|v| $op_gantt = v}
       opts.on("-r", "--rayleigh=#filename", String , "rayleigh file") {|v| $op_rayleigh = v}
       opts.on("-o", "--overhead=#filename", String , "communication overhead file") {|v| $op_overhead = v}
@@ -97,6 +96,7 @@ module UDSim
 
       opts.on("-s", "--style=factor", Float , "Coding Style") {|v| $op_coding_style = v}
       opts.on("-n", "--num-sims=value", Integer , "Number of simulations") {|v| $op_nsim = v}
+      opts.on("-e", "--seed=value", Integer , "Random seed for reproducible results") {|v| $op_seed = v}
       opts.on("-v", "--[no-]verbose=[FLAG]", TrueClass, "run verbosly") { |v| $op_verbose = v }
 
 
@@ -109,7 +109,7 @@ module UDSim
       end
     }
 
-    srand(1) ## Look for repeatability!!
+    srand($op_seed) ## Set random seed for repeatability
 
     $timeline = Timeline.instance
 
