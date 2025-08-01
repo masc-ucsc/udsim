@@ -1,7 +1,8 @@
 
-1. ruby UDSim.rb -c -g "test.php" -d -s 2.6 -p ../tools/metis-4.0/kmetis ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
-2. ruby UDSim.rb -c -g "test.php" -r "rayleigh" -d -s 2.6 -p ../tools/metis-4.0/kmetis ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
-3. ruby UDSim.rb -c -n 4 -g "test.php" -r "rayleigh" -d -s 2.6 -p ../tools/metis-4.0/kmetis ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
+1. ruby UDSim.rb -c -g "test.php" -d -s 2.6 ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
+2. ruby UDSim.rb -c -g "test.php" -r "rayleigh" -d -s 2.6 ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
 
+
+RUBYLIB=. ruby -I../lib ../lib/UDSim.rb -c -n 4 -g "test.php" -r "rayleigh" -d -s 2.6  ../test/ivm.xml ../test/trend.xml ../test/people4.xml ../test/task.xml
 
 

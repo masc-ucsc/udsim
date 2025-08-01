@@ -110,6 +110,10 @@ class BURAK_Gantt {
 	* @var array Stores component height information
 	*/
 	var $heights = array();
+	/**
+	* @var mixed Grid type
+	*/
+	var $grid;
 
 
 	/**
@@ -208,6 +212,38 @@ class BURAK_Gantt {
 	}
 	
 	/**
+	* Adds a new task to gantt (alternative method signature)
+	*
+	* @param mixed $id Task id
+	* @param string $start Start date
+	* @param string $actual_start Actual start date
+	* @param string $end End date (or task type/description)
+	* @param integer $progress Task progress 0-100
+	* @param integer $label Task label
+	* @param mixed $gid Group id
+	*/
+	function addNewTask($id,$start,$actual_start,$end,$progress,$label,$gid=null){
+		// Check if end parameter is a valid date format, if not, use actual_start + 1 day
+		$effective_start = $actual_start;
+		$effective_end = $end;
+		$effective_gid = $gid;
+		
+		// If end is not a valid date (contains text like "coding", "verification" or is empty)
+		if (empty($end) || !preg_match("/^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}$/i", $end)) {
+			// Use actual_start + 1 day as default end date
+			$start_timestamp = BURAK_Gantt::getTimestamp($actual_start);
+			$effective_end = gmdate("Y-m-d", $start_timestamp + 86400);
+		}
+		
+		// If gid looks like a date, ignore it (set to null)
+		if ($gid && preg_match("/^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}$/i", $gid)) {
+			$effective_gid = null;
+		}
+		
+		$this->addTask($id,$effective_start,$effective_end,$progress,$label,$effective_gid);
+	}
+	
+	/**
 	* Adds a new milestone to gantt
 	*
 	* @param mixed $id Task id
@@ -277,6 +313,19 @@ class BURAK_Gantt {
 			die("Component {$name} does not exist!");
 		}
 		$this->colors[$name] = $color;
+	}
+	
+	/**
+	* Sets locale for date formatting
+	*
+	* @param string $locale Locale string (e.g., "de_DE")
+	*/
+	function setLoc($locale){
+		// Set locale for date formatting - this is a placeholder implementation
+		// as the original usage of setLoc is not clear from the code
+		if (function_exists('setlocale')) {
+			setlocale(LC_TIME, $locale);
+		}
 	}
 	
 	/**
