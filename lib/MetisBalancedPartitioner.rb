@@ -4,11 +4,13 @@ require 'rgl/adjacency'
 require 'matrix'
 
 class MetisBalancedPartitioner
-  def initialize(graph_string_or_file)
-    if File.exist?(graph_string_or_file)
-      @graph_data = File.read(graph_string_or_file)
+  def initialize(graph_input)
+    if File.exist?(graph_input)
+      # File path input
+      @graph_data = File.read(graph_input)
     else
-      @graph_data = graph_string_or_file
+      # String input (METIS format data)
+      @graph_data = graph_input
     end
 
     @graph, @weights = parse_metis_format

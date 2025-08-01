@@ -28,7 +28,6 @@ module UDSim
     @@j = 0    #Tasks not created for main manager, who is stored in location 0
     @@job_array = Array.new
     @@test_flag = 1
-    @@tmp_counter = 0
     def initialize()
       @block          = Array.new
       @n_sub_projects = 0
@@ -478,7 +477,7 @@ module UDSim
         @@module_key[@@name_idHash.key(key)] = @@name_idHash.key(key)
       }
 
-      write_file()
+      do_partition()
     end
 
     def get_key(project)
@@ -528,115 +527,105 @@ module UDSim
       return length
     end
 
-    def write_file()
-      #num_of_people = (($people.num_of_people).to_i-1)*2
-
-      num_of_people = ((People.sub_managers).to_i-1)*2
+    def do_partition()
+      num_of_people = ((People.sub_managers).to_i - 1) * 2
       num_of_people = 2 if num_of_people < 2
 
-      @@tmp_counter+=1
-      tmpFil = Tempfile.new("#{$project_file_name}_#{@@tmp_counter}.hgr")
+      metis_data = generate_metis_format()
 
-      File.open(tmpFil.path, "w") { |aFile|
-        ### line 1 in the .hgr file
-        aFile << vertices() << SPACE << edges()<<(SPACE)<<(FMT)<< SPACE << NCON << ("\n")
-        ###
-
-        ### subsequent lines in the file
-        @mem = Hash.new {|h,k| h[k] = Array.new}
-        conta = 0
-        for i in 1 .. @@cycloHash.length do
-          flag = false
-          if (@@adjHash.has_key?(i))  # for each member check whether it is the key to a se of values.
-            val = @@adjHash.fetch(i)
-            key = @@adjHash.select{|k,v| v == val}   ## sometimes the same set of values can have 2 diff keys, so we index the hash using val
-            key.each {|a|
-              key.delete(a) if not a.first ==  i # If delete here, counting edges fails
-            }
-            if key[0]
-              key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get sts name
-              ### check if this key is value for some one else
-              for j in 1 .. @@cycloHash.length do
-                if ( j.to_i != i.to_i && @@adjHash.has_key?(j))
-                  valx = @@adjHash.fetch(j)
-                  if (valx.include?(key_name))
-                    if (flag == true)
-                      aFile << SPACE << j << SPACE
-                    else
-                      flag = true
-                      aFile <<  @@locHash[key_name.name]  << SPACE << j << SPACE
-                      #aFile << @@cycloHash[key_name.name]  << SPACE << j << SPACE
-                    end
-                  end
-                end
-              end
-            end
-            ###
-
-            #check the val.length in the adjHash , go through that and put all the connections.
-
-            if (val.length > 0 )  then
-              # put all these conenction
-              if (flag == false)
-                #	aFile << @@cycloHash[@@name_idHash.index(i).name] << SPACE
-                aFile <<  @@locHash[@@name_idHash.key(i).name] << SPACE
-                conta = conta + 1
-              end
-              val.each {|v|
-                id = @@name_idHash[v]
-                if (@@adjHash.has_key?(id))then  @mem[id] = @mem[id].push(i) end
-                aFile <<  id << (SPACE)
-                conta = conta + 1
-              }
-              aFile << "\n"
-            else
-              aFile << @@cycloHash[@@name_idHash.key(i).name] << "\n"    ## val.length == 0
-              #			aFile <<  @@locHash[@@name_idHash.key(i).name] << "\n"    ## val.length == -1
-            end
-          else  ## for members that are not keys in the adjHash...which means that they are stored in the value part of the hash
-            if !@@name_idHash.key(i)
-              print "NOTWORKING:  i", i, "\n"
-              next
-            else
-              #FIXME: Added for SCALE
-              member = @@name_idHash.key(i).name()
-              flag1 = false
-              @@adjHash.each{|k,v|
-                v.each{|x|
-                  if (x.name() == member) then
-                    if flag1 == false
-                      aFile <<  @@locHash[member]
-                      flag1 = true
-                    end
-                    #aFile << @@cycloHash[member] << SPACE << k
-                    aFile <<  SPACE << k
-                    #aFile << << @@locHash[member] << SPACE << k
-                  end
-                }
-              }
-              aFile << "\n"
-            end
-          end
-          flag = false
-        end  ### end of for
-        puts conta
-
-      }
-
-      filename = "#{tmpFil.path}.part.#{num_of_people}"
-      if File.exist? filename
-        File.delete filename
-      end
-
-      graph_data  = File.read(tmpFil.path)
-      partitioner = MetisBalancedPartitioner.new(graph_data)
+      partitioner = MetisBalancedPartitioner.new(metis_data)
 
       algorithms = [:greedy_growth, :kernighan_lin]
       result = partitioner.partition(num_of_people, algorithm: algorithms.sample)
 
       result[:partitions].each_with_index do |part, idx|
-        @@partition[idx+1] = part
+        @@partition[idx + 1] = part
       end
+    end
+
+    private
+
+    def generate_metis_format
+      lines = []
+
+      # Header: vertices edges format ncon
+      lines << "#{vertices} #{edges} #{FMT} #{NCON}"
+
+      @mem = Hash.new { |h, k| h[k] = Array.new }
+      conta = 0
+
+      (1..@@cycloHash.length).each do |i|
+        line_parts = []
+        flag = false
+
+        if @@adjHash.has_key?(i)  # for each member check whether it is the key to a set of values.
+          val = @@adjHash.fetch(i)
+          key = @@adjHash.select { |k, v| v == val }   # sometimes the same set of values can have 2 diff keys
+          key.each { |a| key.delete(a) if a.first != i }
+
+          if key[0]
+            key_name = @@name_idHash.index(key[0].first)     # key stored as number, so get its name
+
+            # check if this key is value for some one else
+            (1..@@cycloHash.length).each do |j|
+              if j.to_i != i.to_i && @@adjHash.has_key?(j)
+                valx = @@adjHash.fetch(j)
+                if valx.include?(key_name)
+                  if flag
+                    line_parts << j
+                  else
+                    flag = true
+                    line_parts << @@locHash[key_name.name] << j
+                  end
+                end
+              end
+            end
+          end
+
+          # check the val.length in the adjHash, go through that and put all the connections
+          if val.length > 0
+            # put all these connections
+            unless flag
+              line_parts << @@locHash[@@name_idHash.key(i).name]
+              conta += 1
+            end
+            val.each do |v|
+              id = @@name_idHash[v]
+              if @@adjHash.has_key?(id)
+                @mem[id] = @mem[id].push(i)
+              end
+              line_parts << id
+              conta += 1
+            end
+          else
+            line_parts << @@cycloHash[@@name_idHash.key(i).name]    # val.length == 0
+          end
+        else  # for members that are not keys in the adjHash...stored in the value part of the hash
+          if !@@name_idHash.key(i)
+            print "NOTWORKING:  i", i, "\n"
+            next
+          else
+            # FIXME: Added for SCALE
+            member = @@name_idHash.key(i).name
+            flag1 = false
+            @@adjHash.each do |k, v|
+              v.each do |x|
+                if x.name == member
+                  unless flag1
+                    line_parts << @@locHash[member]
+                    flag1 = true
+                  end
+                  line_parts << k
+                end
+              end
+            end
+          end
+        end
+
+        lines << line_parts.join(' ')
+      end
+
+      lines.join("\n")
     end
 
   end  #Class Project End
