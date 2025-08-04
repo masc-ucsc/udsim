@@ -22,6 +22,7 @@ module UDSim
 
     attr_accessor :boss
     attr_accessor :pending_projects # Employee's list of tasks to complete
+    attr_accessor :current_task     # Current task being worked on (nil if idle)
     attr_accessor :dependants   # This will be flled only for managers/sub-managers
     attr_accessor :job_pool     # Pool from which the manager selects the task to assign
 
@@ -85,6 +86,7 @@ module UDSim
 
       @dependants = Array.new
       @pending_projects = Array.new
+      @current_task = nil  # No current task initially
       @new_job_pool = Array.new
       @initial_productivity = @trend_productivity.random_gaussian
 
@@ -234,13 +236,16 @@ module UDSim
 
       ## END ADJUST TIME PENDING
 
-      return 0 if @pending_projects.length > 0 and @pending_projects.first.sub_project.name != task.sub_project.name
+      # Prevent task switching: if person has pending tasks and current task is different, don't work
+      if @pending_projects.length > 0 and @pending_projects.first.sub_project.name != task.sub_project.name
+        return 1  # Changed from 0 to 1 to prevent immediate processing of next event
+      end
+      
       unless (task.hours > task.adjusted_hours)
         $timeline.add_work(task)
         return 1
       end
 
-      # FIX: Don't schedule next task until current task is finished
       task_finish(task)
       if $op_verbose && task.name == "sub_partition" && task.hours > task.adjusted_hours
         print task.name, "  of person ", task.person.name, " is going to finish ", $timeline.workdate.to_date, "\n"
@@ -248,10 +253,10 @@ module UDSim
 
       task.finish_work(@effectiveness)
 
-      # Schedule next task only after current task completes
+      # Schedule next pending task if available (use index 0, not 1)
       if @pending_projects.length > 0
-        t = @pending_projects[0]  # Use index 0, not 1 (original bug was using index 1)
-        $timeline.add_work(t)
+        next_task = @pending_projects[0]  # Fixed: was [1] originally
+        $timeline.add_work(next_task)
       end
 
       return 1

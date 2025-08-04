@@ -37,6 +37,11 @@ module UDSim
     end
 
     #-------------------------------------------
+    def all_people
+      return @active_people + @idle_people
+    end
+
+    #-------------------------------------------
     def parse!(xml)
 
       # Each block
