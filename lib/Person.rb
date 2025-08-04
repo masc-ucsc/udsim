@@ -240,17 +240,19 @@ module UDSim
         return 1
       end
 
-      if @pending_projects.length > 1
-        t = @pending_projects[1]
-        $timeline.add_work(t)
-      end
-
+      # FIX: Don't schedule next task until current task is finished
       task_finish(task)
       if $op_verbose && task.name == "sub_partition" && task.hours > task.adjusted_hours
         print task.name, "  of person ", task.person.name, " is going to finish ", $timeline.workdate.to_date, "\n"
       end
 
       task.finish_work(@effectiveness)
+
+      # Schedule next task only after current task completes
+      if @pending_projects.length > 0
+        t = @pending_projects[0]  # Use index 0, not 1 (original bug was using index 1)
+        $timeline.add_work(t)
+      end
 
       return 1
     end
