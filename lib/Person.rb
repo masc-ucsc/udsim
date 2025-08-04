@@ -125,24 +125,18 @@ module UDSim
         print "for gantt.schedule ::", task.sub_project.name, "\n" if $op_debug
         # Keep old structure for backward compatibility
         @@people_date[task.sub_project.name] = @@people_date[task.sub_project.name] << task.name << task.person.name << $timeline.workdate.to_date
-        
-        # New structured approach: record task start
-        task_key = "#{task.sub_project.name}_#{task.name}"
-        @@gantt_tasks[task_key] = {} unless @@gantt_tasks[task_key]
-        @@gantt_tasks[task_key][task.person.name] = {} unless @@gantt_tasks[task_key][task.person.name]
-        @@gantt_tasks[task_key][task.person.name][:start_date] = $timeline.workdate.to_date
-        @@gantt_tasks[task_key][task.person.name][:task_name] = task.name
-        @@gantt_tasks[task_key][task.person.name][:project_name] = task.sub_project.name
+
+        # NOTE: Gantt start recording moved to do_work to show actual work start time
       end
 
       @@active_tasks << task
 
       x  = task.sub_project.raw_hours(task)
 
-      @unadjusted_hours      = @unadjusted_hours      + x
+      @unadjusted_hours      += x
 
       if task.name == "design" or task.name == "verification" or task.name == "coding" ## FIXME: change this
-        @approx_projects_hours = @approx_projects_hours + x
+        @approx_projects_hours += x
         @adjusted_hours        = calc_finish_hour(task, x)
       else
         # For partition tasks with instant partitioning, use much smaller but reasonable time
@@ -183,8 +177,9 @@ module UDSim
         print "for gantt.do work::", task.sub_project.name, "\n" if $op_verbose
         # Keep old structure for backward compatibility
         @@people_date[task.sub_project.name] = @@people_date[task.sub_project.name] << $timeline.workdate.to_date
-        
+
         # New structured approach: record task end
+        # Include full sub-project name to distinguish partitioned tasks (main.0, main.1, etc.)
         task_key = "#{task.sub_project.name}_#{task.name}"
         if @@gantt_tasks[task_key] && @@gantt_tasks[task_key][task.person.name]
           @@gantt_tasks[task_key][task.person.name][:end_date] = $timeline.workdate.to_date
@@ -209,16 +204,21 @@ module UDSim
     # advance_hour is called.
     def do_work(task)
 
-      print "Person.rb ",self.name , ": is working on ", task.name, " " , task.sub_project.name, " " ,task.hours, " ", task.adjusted_hours, " today's date ", $timeline.workdate.to_date, "\n" if $op_verbose
+      print "Person.rb ",self.name , ": is working on ", task.name, " " , task.sub_project.name, " hours:" ,task.hours, " adj:", task.adjusted_hours, " today's date ", $timeline.workdate.to_date, "\n" if $op_verbose
 
       task.do_work(@effectiveness)
 
-      #       @@rayleigh[$timeline.workdate.to_month] = @@rayleigh[$timeline.workdate.to_month] << @name
-      if ((task.hours > 0.0 && task.hours <2.0 )  && task.flag == 0 )  ## Needed only if generating gantt chart
-        task.flag = 1
-        if $op_gantt
-          print "for gantt.do work::", task.sub_project.name, "\n" if $op_verbose
-          @@people_date[task.sub_project.name] = @@people_date[task.sub_project.name] << $timeline.workdate.to_date
+      if $op_gantt
+        if task.hours > 0.0 and task.flag == 0
+          task.flag = 1
+          @@people_date[task.sub_project.name] <<= $timeline.workdate.to_date
+
+          task_key = "#{task.sub_project.name}_#{task.name}"
+          @@gantt_tasks[task_key] = {} unless @@gantt_tasks[task_key]
+          @@gantt_tasks[task_key][task.person.name] = {} unless @@gantt_tasks[task_key][task.person.name]
+          @@gantt_tasks[task_key][task.person.name][:start_date] = $timeline.workdate.to_date
+          @@gantt_tasks[task_key][task.person.name][:task_name] = task.name
+          @@gantt_tasks[task_key][task.person.name][:project_name] = task.sub_project.name
         end
       end
 
@@ -251,8 +251,6 @@ module UDSim
       end
 
       task.finish_work(@effectiveness)
-
-      plot_gantt_chart() if $op_gantt
 
       return 1
     end
@@ -408,10 +406,11 @@ module UDSim
       return (@skill[type])/100.0
     end
 
-    def plot_gantt_chart
+    def self.plot_gantt_chart
+      puts "HERE"
       # Generate HTML file with Google Charts Timeline using new structured data
       filename = $op_gantt.gsub(/\.php$/, '.html')
-      
+
       File.open(filename, "w") do |aFile|
         aFile.puts "<!DOCTYPE html>"
         aFile.puts "<html>"
@@ -446,11 +445,11 @@ module UDSim
 
         # Generate timeline data using the new structured approach
         tasks_generated = []
-        
+
         @@gantt_tasks.each do |task_key, person_data|
           person_data.each do |person_name, task_info|
             next unless task_info[:start_date] # Skip tasks without start date
-            
+
             # Use actual end date if available, otherwise calculate reasonable duration
             end_date = task_info[:end_date]
             if end_date.nil?
@@ -458,11 +457,11 @@ module UDSim
               task_name = task_info[:task_name] || ""
               duration_days = case task_name.to_s
                              when /design/ then 7    # Design tasks: ~1 week
-                             when /coding/ then 14   # Coding tasks: ~2 weeks  
+                             when /coding/ then 14   # Coding tasks: ~2 weeks
                              when /verification/ then 5  # Verification: ~1 week
                              else 3  # Default: 3 days
                              end
-              
+
               begin
                 parsed_start = Date.parse(task_info[:start_date])
                 end_date = (parsed_start + duration_days).strftime("%Y-%m-%d")
@@ -470,22 +469,22 @@ module UDSim
                 end_date = task_info[:start_date] # Fallback to start date
               end
             end
-            
+
             # Convert dates to JavaScript format
             start_js = date_to_js(task_info[:start_date])
             end_js = date_to_js(end_date)
-            
+
             # Create user-friendly task name
             display_task_name = task_key.gsub(/_/, '_')
-            
+
             task_data = "        ['#{person_name}', '#{display_task_name}', #{start_js}, #{end_js}]"
             tasks_generated << task_data
           end
         end
-        
+
         # Write the tasks data
         aFile.puts tasks_generated.join(",\n")
-        
+
         aFile.puts "      ]);"
         aFile.puts ""
         aFile.puts "      var options = {"
@@ -504,10 +503,10 @@ module UDSim
         aFile.puts "</html>"
       end # end for file
     end
-    
+
     private
-    
-    def date_to_js(date)
+
+    def self.date_to_js(date)
       # Convert UDSim date format to JavaScript Date constructor format
       if date.nil?
         # Default to today if date is nil
@@ -538,7 +537,7 @@ module UDSim
         # Default fallback
         parsed_date = Date.today
       end
-      
+
       return "new Date(#{parsed_date.year}, #{parsed_date.month - 1}, #{parsed_date.day})"
     end
   end # End of Person

@@ -167,6 +167,8 @@ module UDSim
         @current_date = event.start_date
       end
 
+      Person.plot_gantt_chart() if $op_gantt
+
       return conta
     end
   end
