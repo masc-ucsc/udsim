@@ -93,8 +93,8 @@ module UDSim
         person.current_task = next_task
         person.task_schedule(next_task) if person.respond_to?(:task_schedule)
         
-        # Record new task start for gantt chart - this task starts next hour
-        record_task_start_next_hour(person, next_task)
+        # Record new task start for gantt chart - this task starts immediately
+        record_task_start(person, next_task)
         
         puts "WorkScheduler: #{person.name} immediately starting #{next_task.name} #{next_task.sub_project.name}" if $op_verbose
       end
