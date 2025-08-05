@@ -1,6 +1,6 @@
 require 'test/unit'
-require_relative '../lib/WorkScheduler'
-require_relative '../lib/TaskManager'
+require_relative '../src/WorkScheduler'
+require_relative '../src/TaskManager'
 
 module UDSim
   class TestWorkScheduler < Test::Unit::TestCase

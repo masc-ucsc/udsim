@@ -173,8 +173,10 @@ module UDSim
             start_js = time_to_js(start_time)
             end_js = time_to_js(end_time)
 
-            # Create display name
-            display_task_name = task_info[:task_name] || task_key
+            # Create display name with job name
+            job_name = task_info[:project_name] || "unknown"
+            task_name = task_info[:task_name] || task_key
+            display_task_name = "#{job_name}.#{task_name}"
 
             task_data = "        ['#{person_name}', '#{display_task_name}', #{start_js}, #{end_js}]"
             tasks_generated << task_data

@@ -5,13 +5,13 @@ require 'rubygems'
 require 'rexml/document'
 require 'optparse'
 require 'fileutils'
-require_relative 'lib/WorkScheduler'
-require_relative 'lib/Design'
-require_relative 'lib/Job'
-require_relative 'lib/TaskPlan'
-require_relative 'lib/TaskTypeConfig'
-require_relative 'lib/TaskManager'
-require_relative 'lib/People2'
+require_relative 'src/WorkScheduler'
+require_relative 'src/Design'
+require_relative 'src/Job'
+require_relative 'src/TaskPlan'
+require_relative 'src/TaskTypeConfig'
+require_relative 'src/TaskManager'
+require_relative 'src/People2'
 
 module UDSim2
 
@@ -46,6 +46,7 @@ module UDSim2
     $op_compile_time = 0.0
     $op_seed         = 1
     $op_instant_partition = false
+    $op_people_count = nil
 
     argv.options do |opts|
       opts.banner = ''
@@ -68,6 +69,7 @@ module UDSim2
       opts.on('-s', '--style=factor', Float, 'Coding Style') { |v| $op_coding_style = v }
       opts.on('-n', '--num-sims=value', Integer, 'Number of simulations') { |v| $op_nsim = v }
       opts.on('-e', '--seed=value', Integer, 'Random seed for reproducible results') { |v| $op_seed = v }
+      opts.on('-p', '--people=count', Integer, 'Number of engineers to create') { |v| $op_people_count = v }
       opts.on('-i', '--instant-partition', 'Enable instantaneous partitioning without overhead') { $op_instant_partition = true }
       opts.on('-v', '--[no-]verbose=[FLAG]', TrueClass, 'run verbosly') { |v| $op_verbose = v }
 
@@ -86,7 +88,6 @@ module UDSim2
     $design = UDSim::Design.new
     $task_type_config = UDSim::TaskTypeConfig.new
     $people = UDSim::People2.new
-    $people.create_standard_people(4) # Create 4 engineers by default
     
     $project_file_name = File.basename(argv[0], '.xml') if argv[0]
 
@@ -110,9 +111,26 @@ module UDSim2
           puts "Not a task type file: #{option}" if $op_verbose
         end
         
+        # Try to parse as people configuration
+        begin
+          $people.parse!(xml)
+        rescue
+          puts "Not a people file: #{option}" if $op_verbose
+        end
+        
       else
         puts "ERROR: Unknown option #{option}"
         exit(-2)
+      end
+    end
+
+    # Create people based on CLI option or error if neither option nor XML provided
+    if $people.empty?
+      if $op_people_count
+        $people.create_standard_people($op_people_count)
+        puts "Created #{$op_people_count} engineers from CLI option" if $op_verbose
+      else
+        error("No people specified. Use -p/--people=N option or provide a people.xml file.")
       end
     end
 

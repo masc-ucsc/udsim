@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/Design'
-require_relative '../lib/Job'
-require_relative '../lib/TaskPlan'
-require_relative '../lib/TaskTypeConfig'
-require_relative '../lib/WorkScheduler'
-require_relative '../lib/TaskManager'
+require_relative '../src/Design'
+require_relative '../src/Job'
+require_relative '../src/TaskPlan'
+require_relative '../src/TaskTypeConfig'
+require_relative '../src/WorkScheduler'
+require_relative '../src/TaskManager'
 
 # Test script for Design, Job, TaskPlan, and TaskTypeConfig integration
 

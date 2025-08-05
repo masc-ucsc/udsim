@@ -43,8 +43,8 @@ module UDSim
       # Update job's current task progression
       @source_job.advance_task(@task_name, @next_task_name) if @source_job.respond_to?(:advance_task)
 
-      # Create next task in the workflow if not at the end
-      if @next_task_name && !@task_type_config.is_final_task?(@next_task_name) && @next_task_name != "done"
+      # Create next task in the workflow if we have a next task
+      if @next_task_name
         next_taskplan = @source_job.create_next_taskplan(self, @task_type_config)
         if next_taskplan
           WorkScheduler.instance.add_task(next_taskplan)
@@ -66,44 +66,31 @@ module UDSim
     private
 
     def calculate_required_hours(job, task_name, effort)
-      base_hours = 0.0
+      base_hours = 1.0 # Base unit of work
 
       # Use job complexity metrics if available
       raise "complexity must be set" unless job.respond_to?(:complexity_metrics)
 
       metrics = job.complexity_metrics
       if $op_cyclo && metrics[:cyclo]
-        base_hours = 6 * metrics[:cyclo]
+        base_hours = metrics[:cyclo]
       elsif metrics[:loc]
-        base_hours = metrics[:loc]
+        base_hours = metrics[:loc] / 100.0 # Scale LOC to reasonable hours
       else
-        base_hours = 40.0 # Default fallback
+        base_hours = 1.0 # Default fallback
       end
 
-      # Adjust for effort level
+      # Apply task type effort multiplier from XML configuration
       if effort && effort > 0
-        base_hours = base_hours / (effort.to_f / 100.0)
+        base_hours = base_hours * (effort.to_f / 100.0)
       end
 
       # Apply coding style factor if available
       base_hours = base_hours * $op_coding_style if $op_coding_style
 
-      # Task-specific adjustments
-      case task_name
-      when "start"
-        base_hours *= 0.1 # Start tasks are quick
-      when "partition"
-        if $op_instant_partition
-          base_hours = 8.0 # Fast partition
-        else
-          base_hours *= 0.5 # Moderate partition time
-        end
-      when "design"
-        base_hours *= 1.0 # Full design time
-      when "coding"
-        base_hours *= 1.2 # Coding takes a bit more
-      when "verification"
-        base_hours *= 0.8 # Verification is faster than coding
+      # Special handling for partition tasks
+      if task_name == "partition" && $op_instant_partition
+        base_hours = 8.0 # Fast partition override
       end
 
       # Minimum task time

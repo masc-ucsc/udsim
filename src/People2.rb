@@ -1,9 +1,10 @@
 require_relative 'Person2'
+require 'rexml/document'
 
 module UDSim
   # People2 - Simple collection of Person2 instances
   # Replaces the complex People class with basic functionality
-  # No XML parsing needed - creates standard set of people
+  # Supports XML parsing to read people configuration
   class People2
     def initialize
       @people = []
@@ -29,6 +30,21 @@ module UDSim
         @people << person
       end
       puts "People2: Created #{@people.length} people" if $op_verbose
+    end
+
+    # Parse people XML file
+    def parse!(xml_doc)
+      xml_doc.elements.each('people/person') do |person_element|
+        name = person_element.attributes['name'] || 'Engineer'
+        num = person_element.attributes['num']&.to_i || 1
+        
+        num.times do |i|
+          person_name = num > 1 ? "#{name}#{i+1}" : name
+          person = Person2.new(person_name)
+          @people << person
+        end
+      end
+      puts "People2: Parsed #{@people.length} people from XML" if $op_verbose
     end
 
     # Compatibility methods for existing code
