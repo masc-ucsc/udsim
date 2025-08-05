@@ -1,21 +1,16 @@
 <project>
   <block name="fetch" type="rtl">
-    <complexity cyclo="22">
-      <input name="name1" width="32"/>
-      <input name="name2" width="32"/>
-      <output name="name3" width="32"/>
-    </complexity>
-    <block name="ifid" type="custom">
-      
-    </block>
-    <block name="crack" type="custom">
-    </block>
+    <input name="name1" width="32"/>
+    <input name="name2" width="32"/>
+    <complexity cyclo1="5" cyclo2="5" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="4" />
+    <volume nNodes="43" nStmts="4" nExprs="4" nInputs="11" nOutputs="3" nParams="3" nAlwaysClocks="3" nBAssign="0" nNBAssign="6" nWAssign="3" nOther="23" />
+    <output name="name3" width="32"/>
   </block>
   <block name="execute" type="rtl">
-    <complexity cyclo="23">
-      <output name="name3" width="32"/>
-      <input  name="name1" width="32"/>
-      <input  name="name1" width="32"/>
-    </complexity>
+    <complexity cyclo1="2" cyclo2="2" nCaseStmts="0" nCaseItems="0" nLoops="0" nIfStmts="1" />
+    <volume nNodes="106" nStmts="1" nExprs="35" nInputs="17" nOutputs="3" nParams="3" nAlwaysClocks="3" nBAssign="2" nNBAssign="0" nWAssign="0" nOther="65" />
+    <output name="name3" width="32"/>
+    <input  name="name1" width="32"/>
+    <input  name="name1" width="32"/>
   </block>
 </project>
