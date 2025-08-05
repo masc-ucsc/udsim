@@ -1,0 +1,21 @@
+<tasktype>
+  <task name ="start">
+    <skill type="partition" effort="4"/>
+    <subtask name="design"/>
+  </task>
+
+  <task name = "design">
+     <skill type="front_design" effort="12"/>
+     <subtask name="coding"/>
+  </task>
+
+   <task name = "coding">
+     <skill type="front_design" effort="30"/>
+     <subtask name="verification"/>
+  </task>
+
+   <task name = "verification" >
+     <skill type="front_verif" effort="40"/>
+   </task>
+
+</tasktype>

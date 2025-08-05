@@ -1,0 +1,13 @@
+
+Add the concept of compile_time from UDSim to udsim2
+
+Add the concept of defect from UDSim to udsim2
+
+Add the concept of communication. For a module to be done the instance must be designed already.
+
+
+Maybe If the subtask is not finished, there is a defect rate, Otherwise, it
+follows a log decay function that should have 50% failure rate if not finished
+design.
+
+
